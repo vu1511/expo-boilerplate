@@ -1,3 +1,5 @@
-export const Button = () => {
+const Button = () => {
   return null
 }
+
+export default Button

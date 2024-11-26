@@ -1,0 +1,19 @@
+{
+  "root": true,
+  "extends": ["expo", "eslint:recommended"],
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["@/*", "src/*"]],
+        "extensions": [".ts", ".tsx", ".js", ".jsx", ".json"]
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "plugins": ["jest", "jest-formatting", "testing-library"],
+      "extends": ["plugin:jest/recommended", "plugin:jest-formatting/recommended", "plugin:testing-library/react"]
+    }
+  ]
+}

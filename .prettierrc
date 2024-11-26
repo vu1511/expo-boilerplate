@@ -1,7 +1,15 @@
 {
-  "printWidth": 100,
+  "printWidth": 120,
   "tabWidth": 2,
   "singleQuote": true,
   "trailingComma": "es5",
-  "semi": false
+  "semi": false,
+  "overrides": [
+    {
+      "files": ["*.json", "*.config.js", ".eslintrc"],
+      "options": {
+        "trailingComma": "none"
+      }
+    }
+  ]
 }
