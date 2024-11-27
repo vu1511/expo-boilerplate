@@ -5,5 +5,7 @@
 // jest.mock('react-native-safe-area-context', () => mockSafeAreaContext)
 
 // describe('tooltip', () => {
-//   it('render tooltip', () => {})
+//   it('render tooltip', () => {
+//     expect(1).toBe(1)
+//   })
 // })
