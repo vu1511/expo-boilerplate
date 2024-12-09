@@ -1,2 +1,3 @@
 export { default as Button } from './button'
-export { default as Tooltip, TooltipProps } from './tooltip'
+export { Arrow, ArrowProps, Popover, PopoverPlacement, PopoverProps } from './popover'
+export { default as Typography, TypographyProps } from './typography'

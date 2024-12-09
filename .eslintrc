@@ -72,7 +72,11 @@
         "@typescript-eslint/no-use-before-define": "off",
         "react-hooks/exhaustive-deps": "warn",
         "react/no-danger": "off",
-        "global-require": "off"
+        "global-require": "off",
+        "import/order": "off",
+        "react/jsx-key": "error",
+        "react/no-array-index-key": "off",
+        "react/no-unstable-nested-components": "off"
       }
     },
     {
