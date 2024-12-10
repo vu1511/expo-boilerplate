@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   triggerBtn: {
     alignSelf: 'flex-start',
   },
-  overlay: {
+  backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },

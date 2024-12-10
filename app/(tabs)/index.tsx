@@ -1,38 +1,24 @@
 import { Popover, Typography } from '@/components'
 import { Colors } from '@/styles'
-import { forwardRef, useRef } from 'react'
+import { forwardRef, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
-import RPopover from 'react-native-popover-view'
-import { Placement } from 'react-native-popover-view/dist/Types'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function HomeScreen() {
-  const ref = useRef<View>(null)
+  const [showPopover, setShowPopover] = useState(false)
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, justifyContent: 'space-between' }}>
       <View style={{ gap: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
-        <RPopover popoverStyle={{ height: 300 }} placement={Placement.BOTTOM} offset={0} from={ref}>
+        <Popover
+          edgeOffset={8}
+          placement="auto"
+          visible={showPopover}
+          trigger={<Trigger onPress={() => setShowPopover(true)} />}
+          onBackdropPress={() => setShowPopover(false)}
+        >
           <Content />
-        </RPopover>
-
-        {Array.from({ length: 100 }).map((i, index) => (
-          <Popover
-            key={index}
-            placement="top"
-            edgeOffset={8}
-            // offset={10}
-            // arrowSize={0}
-            // backgroundStyle={{ backgroundColor: 'transparent' }}
-            trigger={<Trigger />}
-            // popoverStyle={{ maxHeight: 300 }}
-          >
-            <Content />
-          </Popover>
-          // <RPopover key={index} placement={Placement.AUTO} from={<Trigger />}>
-          //   <Content />
-          // </RPopover>
-        ))}
+        </Popover>
       </View>
     </SafeAreaView>
   )

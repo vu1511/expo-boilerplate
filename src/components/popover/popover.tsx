@@ -1,13 +1,23 @@
-import React, { Component, ReactElement, ReactNode, RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import {
+  type LegacyRef,
+  type ReactNode,
+  type RefObject,
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  type LayoutChangeEvent,
+  type View,
   Animated,
   Easing,
-  LayoutChangeEvent,
   StyleProp,
   StyleSheet,
   TouchableWithoutFeedback,
   useWindowDimensions,
-  View,
   ViewStyle,
 } from 'react-native'
 import { Portal } from 'react-native-portalize'
@@ -22,16 +32,36 @@ import {
   defaultMeasurement,
 } from './utils'
 
+type Noop = () => void
+
 export type PopoverProps = {
-  // visible?: boolean
+  /**
+   * define controlled popover, required if trigger is ref or function
+   */
+  visible?: boolean
+  /**
+   * size of arrow, set `0` to hide, default is `8`
+   */
   arrowSize?: number
+  /**
+   * Determines the position of the popover, one of `top`, `right`, `bottom`, `left`, `auto`, `autoVertical`, `autoHorizontal`.
+   * - `auto`: Automatically selects the best position (`top`, `right`, `bottom`, or `left`).
+   * - `autoVertical`: Selects the best vertical position (`top` or `bottom`).
+   * - `autoHorizontal`: Selects the best horizontal position (`left` or `right`).
+   */
   placement?: PopoverPlacement
-  trigger: RefObject<Component> | ((sourceRef: RefObject<Component>, openPopover: () => void) => ReactNode) | ReactNode
-  children: ReactElement
+  trigger: ReactNode | RefObject<{}> | ((props: { sourceRef: LegacyRef<{}>; openPopover: Noop }) => ReactNode)
+  children: ReactNode | ((props: { closePopover: Noop }) => ReactNode) // closePopover is only available with uncontrolled visible
   popoverStyle?: StyleProp<ViewStyle>
   backgroundStyle?: StyleProp<ViewStyle>
   offset?: number
   edgeOffset?: number
+  backdropClosable?: boolean
+  onBackdropPress?: Noop
+  onCloseStart?: Noop
+  onCloseComplete?: Noop
+  onOpenStart?: Noop
+  onOpenComplete?: Noop
 }
 
 /*
@@ -43,23 +73,32 @@ export type PopoverProps = {
   5. modify position with autoVertical: priority show on bottom , autoHorizontal: priority show on right, auto
   6. support more animations
   7. support edge offset both width and height
+  8. support more trigger mode: ref, function, node
+  9. prevent goback by physical back button on android
 */
 
 export default function Popover({
-  // visible: externalVisible,
+  visible: externalVisible,
   trigger,
   children,
   offset = 0,
-  popoverStyle: externalPopoverStyle,
   placement = 'top',
   arrowSize = 8,
   edgeOffset = 12,
   backgroundStyle,
+  backdropClosable = true,
+  popoverStyle: externalPopoverStyle,
+  onOpenStart,
+  onOpenComplete,
+  onCloseStart,
+  onCloseComplete,
+  onBackdropPress,
 }: PopoverProps) {
   const windowSize = useWindowDimensions()
 
-  const childrenElementRef = useRef<View>(null)
-  const triggerElementRef = useRef<View>(null)
+  const hasExternalVisible = typeof externalVisible === 'boolean'
+
+  const triggerRef = useRef<View | null>(null)
   const scale = useRef(new Animated.Value(0)).current
 
   const opacityAnimated = scale.interpolate({ inputRange: [0, 1], outputRange: [0, 1] })
@@ -67,9 +106,55 @@ export default function Popover({
   const [visible, setVisible] = useState(false)
   const [measurement, setMeasurement] = useState<Measurement>(defaultMeasurement)
 
+  const onOpen = useCallback(() => {
+    onOpenStart?.()
+    setVisible(true)
+    Animated.timing(scale, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.back(1)),
+    }).start(({ finished }) => {
+      if (finished && onOpenComplete) {
+        onOpenComplete()
+      }
+    })
+  }, [scale, onOpenStart, onOpenComplete])
+
+  const onClose = useCallback(() => {
+    onCloseStart?.()
+    Animated.timing(scale, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.inOut(Easing.quad),
+    }).start(({ finished }) => {
+      setVisible(false)
+      setMeasurement(defaultMeasurement)
+      if (finished && onCloseComplete) {
+        onCloseComplete()
+      }
+    })
+  }, [scale, onCloseStart, onCloseComplete])
+
+  if (hasExternalVisible && externalVisible !== visible) {
+    if (externalVisible) {
+      onOpen()
+    } else {
+      onClose()
+    }
+  }
+
+  const handlePressBackdrop = useCallback(() => {
+    onBackdropPress?.()
+    if (backdropClosable && !hasExternalVisible) {
+      onClose()
+    }
+  }, [onClose, onBackdropPress, backdropClosable, hasExternalVisible])
+
   const handleOnLayout = useCallback(
     ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
-      triggerElementRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      triggerRef.current?.measure?.((x, y, width, height, pageX, pageY) => {
         const nextMeasurement: Measurement = {
           measured: true,
           popover: layout,
@@ -89,28 +174,6 @@ export default function Popover({
     },
     [placement, windowSize, edgeOffset, offset, arrowSize]
   )
-
-  const onOpen = useCallback(async () => {
-    setVisible(true)
-    Animated.timing(scale, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-      easing: Easing.out(Easing.back(1)),
-    }).start()
-  }, [scale])
-
-  const onClose = useCallback(() => {
-    Animated.timing(scale, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-      easing: Easing.inOut(Easing.quad),
-    }).start(() => {
-      setVisible(false)
-      setMeasurement(defaultMeasurement)
-    })
-  }, [scale])
 
   const { popoverStyle, popoverWrapperStyle, arrowStyle } = useMemo<{
     arrowStyle: ViewStyle
@@ -150,16 +213,28 @@ export default function Popover({
   }, [measurement, windowSize, opacityAnimated, scale, arrowSize, offset, edgeOffset])
 
   const triggerElement = useMemo(() => {
-    if (typeof trigger === 'function') {
-      return trigger(triggerElementRef, onOpen)
-    } else if (React.isValidElement(trigger)) {
-      return React.cloneElement(trigger, {
-        onPress: onOpen,
-        ref: triggerElementRef,
-      } as any)
+    if (!trigger) return null
+
+    if (isValidElement(trigger)) {
+      if (hasExternalVisible) {
+        // @ts-ignore
+        return cloneElement(trigger, { ref: triggerRef })
+      } else {
+        return cloneElement(trigger, {
+          // @ts-ignore
+          ref: triggerRef,
+          onPress: onOpen,
+        })
+      }
+    } else if (typeof trigger === 'function') {
+      return trigger({ sourceRef: triggerRef, openPopover: onOpen })
+    } else if (Object.hasOwnProperty.call(trigger, 'current')) {
+      triggerRef.current = (trigger as RefObject<View>).current
     }
-    return trigger
-  }, [trigger, onOpen])
+
+    return null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onOpen, trigger, visible, externalVisible])
 
   const { popoverStyles, backgroundColor } = useMemo<{
     popoverStyles: StyleProp<ViewStyle>
@@ -174,20 +249,35 @@ export default function Popover({
     }
   }, [popoverStyle, externalPopoverStyle])
 
+  const RenderChildren = useMemo(() => {
+    if (typeof children === 'function') {
+      return children({
+        closePopover: () => {
+          if (!hasExternalVisible) {
+            onClose()
+          }
+        },
+      })
+    } else if (children) {
+      return children
+    }
+
+    return null
+  }, [children, onClose, hasExternalVisible])
+
   return (
     <>
       {visible && (
         <Portal>
-          <TouchableWithoutFeedback onPress={onClose}>
-            <Animated.View style={[styles.overlay, backgroundStyle, { opacity: opacityAnimated }]}>
-              <Animated.View ref={childrenElementRef} style={popoverWrapperStyle} onLayout={handleOnLayout}>
-                <Animated.View style={arrowStyle}>
-                  <Arrow direction={measurement.direction} size={arrowSize} color={backgroundColor} />
-                </Animated.View>
-                <Animated.View style={popoverStyles}>{children}</Animated.View>
-              </Animated.View>
-            </Animated.View>
+          <TouchableWithoutFeedback onPress={handlePressBackdrop}>
+            <Animated.View style={[styles.backdrop, backgroundStyle, { opacity: opacityAnimated }]} />
           </TouchableWithoutFeedback>
+          <Animated.View style={popoverWrapperStyle} onLayout={handleOnLayout}>
+            <Animated.View style={arrowStyle}>
+              <Arrow direction={measurement.direction} size={arrowSize} color={backgroundColor} />
+            </Animated.View>
+            <Animated.View style={popoverStyles}>{RenderChildren}</Animated.View>
+          </Animated.View>
         </Portal>
       )}
 
