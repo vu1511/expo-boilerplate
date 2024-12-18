@@ -50,7 +50,7 @@ export type PopoverProps = {
    * - `autoHorizontal`: Selects the best horizontal position (`left` or `right`).
    */
   placement?: PopoverPlacement
-  trigger: ReactNode | RefObject<{}> | ((props: { sourceRef: LegacyRef<{}>; openPopover: Noop }) => ReactNode)
+  trigger: ReactNode | RefObject<{}> | ((props: { sourceRef: LegacyRef<any>; openPopover: Noop }) => ReactNode)
   children: ReactNode | ((props: { closePopover: Noop }) => ReactNode) // closePopover is only available with uncontrolled visible
   popoverStyle?: StyleProp<ViewStyle>
   backgroundStyle?: StyleProp<ViewStyle>
@@ -73,8 +73,7 @@ export type PopoverProps = {
   5. modify position with autoVertical: priority show on bottom , autoHorizontal: priority show on right, auto
   6. support more animations
   7. support edge offset both width and height
-  8. support more trigger mode: ref, function, node
-  9. prevent goback by physical back button on android
+  8. prevent goback by physical back button on android
 */
 
 export default function Popover({
@@ -82,7 +81,7 @@ export default function Popover({
   trigger,
   children,
   offset = 0,
-  placement = 'top',
+  placement = 'auto',
   arrowSize = 8,
   edgeOffset = 12,
   backgroundStyle,
@@ -155,6 +154,7 @@ export default function Popover({
   const handleOnLayout = useCallback(
     ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
       triggerRef.current?.measure?.((x, y, width, height, pageX, pageY) => {
+        console.log('trigger measure: ', { x, y, width, height, pageX, pageY })
         const nextMeasurement: Measurement = {
           measured: true,
           popover: layout,
@@ -269,14 +269,16 @@ export default function Popover({
     <>
       {visible && (
         <Portal>
-          <TouchableWithoutFeedback onPress={handlePressBackdrop}>
+          <TouchableWithoutFeedback testID="popover-backdrop" onPress={handlePressBackdrop}>
             <Animated.View style={[styles.backdrop, backgroundStyle, { opacity: opacityAnimated }]} />
           </TouchableWithoutFeedback>
-          <Animated.View style={popoverWrapperStyle} onLayout={handleOnLayout}>
+          <Animated.View testID="popover-wrapper" style={popoverWrapperStyle} onLayout={handleOnLayout}>
             <Animated.View style={arrowStyle}>
               <Arrow direction={measurement.direction} size={arrowSize} color={backgroundColor} />
             </Animated.View>
-            <Animated.View style={popoverStyles}>{RenderChildren}</Animated.View>
+            <Animated.View testID="popover-children" style={popoverStyles}>
+              {RenderChildren}
+            </Animated.View>
           </Animated.View>
         </Portal>
       )}

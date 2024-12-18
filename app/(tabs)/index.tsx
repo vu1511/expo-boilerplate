@@ -1,24 +1,29 @@
 import { Popover, Typography } from '@/components'
 import { Colors } from '@/styles'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useRef, useState } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function HomeScreen() {
+  const ref = useRef<TouchableOpacity>(null)
   const [showPopover, setShowPopover] = useState(false)
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, justifyContent: 'space-between' }}>
-      <View style={{ gap: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
+      <View style={{ gap: 40, flexDirection: 'row', flexWrap: 'wrap', paddingTop: 80, paddingLeft: 100 }}>
         <Popover
-          edgeOffset={8}
-          placement="auto"
           visible={showPopover}
-          trigger={<Trigger onPress={() => setShowPopover(true)} />}
+          trigger={ref}
+          edgeOffset={10}
+          arrowSize={8}
+          placement="right"
           onBackdropPress={() => setShowPopover(false)}
+          // trigger={({ sourceRef, openPopover }) => <Trigger onPress={openPopover} ref={sourceRef} />}
         >
           <Content />
         </Popover>
+
+        <Trigger onPress={() => setShowPopover(true)} ref={ref} />
       </View>
     </SafeAreaView>
   )
