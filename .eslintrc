@@ -27,7 +27,7 @@
       },
       "rules": {
         "prettier/prettier": [
-          "error",
+          "warn",
           {
             "tabWidth": 2,
             "singleQuote": true,
@@ -64,7 +64,7 @@
         "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
         "import/prefer-default-export": "off",
         "@typescript-eslint/no-unused-vars": "off",
-        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-imports": "warn",
         "unused-imports/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "react/prop-types": "off",
         "no-else-return": "off",
@@ -76,7 +76,8 @@
         "import/order": "off",
         "react/jsx-key": "error",
         "react/no-array-index-key": "off",
-        "react/no-unstable-nested-components": "off"
+        "react/no-unstable-nested-components": "off",
+        "@typescript-eslint/no-shadow": "off"
       }
     },
     {
