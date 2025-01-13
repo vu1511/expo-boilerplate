@@ -1,3 +1,3 @@
 export { default as Arrow, ArrowProps } from './arrow'
-export { type PopoverPlacement } from './types'
-export { default as Popover, PopoverProps } from './popover'
+export { default as Popover } from './popover'
+export { type PopoverPlacement, type PopoverProps } from './types'

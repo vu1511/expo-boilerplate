@@ -1,18 +1,9 @@
-import {
-  type LegacyRef,
-  type ReactNode,
-  type RefObject,
-  cloneElement,
-  isValidElement,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { type RefObject, cloneElement, isValidElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   type LayoutChangeEvent,
   type View,
   Animated,
+  BackHandler,
   Easing,
   StyleProp,
   StyleSheet,
@@ -23,7 +14,7 @@ import {
 import { Portal } from 'react-native-portalize'
 import Arrow from './arrow'
 import { styles } from './style'
-import { Measurement, PopoverDirection, PopoverPlacement } from './types'
+import { Measurement, PopoverDirection, PopoverProps } from './types'
 import {
   computePopoverDirection,
   computePopoverPosition,
@@ -32,48 +23,11 @@ import {
   defaultMeasurement,
 } from './utils'
 
-type Noop = () => void
-
-export type PopoverProps = {
-  /**
-   * define controlled popover, required if trigger is ref or function
-   */
-  visible?: boolean
-  /**
-   * size of arrow, set `0` to hide, default is `8`
-   */
-  arrowSize?: number
-  /**
-   * Determines the position of the popover, one of `top`, `right`, `bottom`, `left`, `auto`, `autoVertical`, `autoHorizontal`.
-   * - `auto`: Automatically selects the best position (`top`, `right`, `bottom`, or `left`).
-   * - `autoVertical`: Selects the best vertical position (`top` or `bottom`).
-   * - `autoHorizontal`: Selects the best horizontal position (`left` or `right`).
-   */
-  placement?: PopoverPlacement
-  trigger: ReactNode | RefObject<{}> | ((props: { sourceRef: LegacyRef<any>; openPopover: Noop }) => ReactNode)
-  children: ReactNode | ((props: { closePopover: Noop }) => ReactNode) // closePopover is only available with uncontrolled visible
-  popoverStyle?: StyleProp<ViewStyle>
-  backgroundStyle?: StyleProp<ViewStyle>
-  offset?: number
-  edgeOffset?: number
-  backdropClosable?: boolean
-  onBackdropPress?: Noop
-  onCloseStart?: Noop
-  onCloseComplete?: Noop
-  onOpenStart?: Noop
-  onOpenComplete?: Noop
-}
-
 /*
   TODO: 
   1. compute popover position with safeAreaInsets
-  2. complete props
-  3. allow pass width, height to arrow
-  4. define document for props, show example
-  5. modify position with autoVertical: priority show on bottom , autoHorizontal: priority show on right, auto
-  6. support more animations
-  7. support edge offset both width and height
-  8. prevent goback by physical back button on android
+  2. support more animations
+  3. support edge offset both width and height
 */
 
 export default function Popover({
@@ -92,6 +46,7 @@ export default function Popover({
   onCloseStart,
   onCloseComplete,
   onBackdropPress,
+  onBackButtonPress,
 }: PopoverProps) {
   const windowSize = useWindowDimensions()
 
@@ -103,11 +58,13 @@ export default function Popover({
   const opacityAnimated = scale.interpolate({ inputRange: [0, 1], outputRange: [0, 1] })
 
   const [visible, setVisible] = useState(false)
+  const visibleRef = useRef(visible)
   const [measurement, setMeasurement] = useState<Measurement>(defaultMeasurement)
 
   const onOpen = useCallback(() => {
     onOpenStart?.()
     setVisible(true)
+    visibleRef.current = true
     Animated.timing(scale, {
       toValue: 1,
       duration: 300,
@@ -129,6 +86,7 @@ export default function Popover({
       easing: Easing.inOut(Easing.quad),
     }).start(({ finished }) => {
       setVisible(false)
+      visibleRef.current = false
       setMeasurement(defaultMeasurement)
       if (finished && onCloseComplete) {
         onCloseComplete()
@@ -143,6 +101,22 @@ export default function Popover({
       onClose()
     }
   }
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (visibleRef.current) {
+        onBackButtonPress?.()
+        return true
+      }
+
+      return false
+    }
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress)
+
+    return () => backHandler.remove()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handlePressBackdrop = useCallback(() => {
     onBackdropPress?.()
