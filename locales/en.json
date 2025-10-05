@@ -1,0 +1,69 @@
+{
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "retry": "Retry"
+  },
+  "navigation": {
+    "home": "Home",
+    "explore": "Explore",
+    "profile": "Profile",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "rememberMe": "Remember Me"
+  },
+  "messages": {
+    "welcome": "Welcome to {{appName}}!",
+    "goodbye": "See you soon!",
+    "itemsCount_one": "You have {{count}} item",
+    "itemsCount_other": "You have {{count}} items",
+    "noData": "No data available",
+    "networkError": "Network error. Please check your connection.",
+    "sessionExpired": "Your session has expired. Please login again."
+  },
+  "validation": {
+    "required": "This field is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least {{min}} characters",
+    "passwordMismatch": "Passwords do not match",
+    "invalidFormat": "Invalid format"
+  },
+  "settings": {
+    "language": "Language",
+    "changeLanguage": "Change Language",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "systemDefault": "System Default",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "terms": "Terms of Service"
+  }
+}
+

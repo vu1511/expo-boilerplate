@@ -1,0 +1,69 @@
+{
+  "common": {
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi",
+    "success": "Thành công",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "refresh": "Làm mới",
+    "retry": "Thử lại"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "explore": "Khám phá",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "about": "Giới thiệu"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "forgotPassword": "Quên mật khẩu?",
+    "resetPassword": "Đặt lại mật khẩu",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "username": "Tên người dùng",
+    "rememberMe": "Ghi nhớ đăng nhập"
+  },
+  "messages": {
+    "welcome": "Chào mừng đến với {{appName}}!",
+    "goodbye": "Hẹn gặp lại!",
+    "itemsCount_one": "Bạn có {{count}} mục",
+    "itemsCount_other": "Bạn có {{count}} mục",
+    "noData": "Không có dữ liệu",
+    "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn.",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+    "passwordTooShort": "Mật khẩu phải có ít nhất {{min}} ký tự",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "invalidFormat": "Định dạng không hợp lệ"
+  },
+  "settings": {
+    "language": "Ngôn ngữ",
+    "changeLanguage": "Thay đổi ngôn ngữ",
+    "theme": "Giao diện",
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ sáng",
+    "systemDefault": "Mặc định hệ thống",
+    "notifications": "Thông báo",
+    "privacy": "Quyền riêng tư",
+    "terms": "Điều khoản dịch vụ"
+  }
+}
+

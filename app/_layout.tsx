@@ -1,4 +1,5 @@
 import 'react-native-reanimated'
+import '@/locales'
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { Stack } from 'expo-router'
