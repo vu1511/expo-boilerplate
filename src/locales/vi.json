@@ -27,16 +27,31 @@
     "about": "Giới thiệu"
   },
   "auth": {
-    "login": "Đăng nhập",
-    "logout": "Đăng xuất",
-    "register": "Đăng ký",
-    "forgotPassword": "Quên mật khẩu?",
-    "resetPassword": "Đặt lại mật khẩu",
     "email": "Email",
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận mật khẩu",
+    "name": "Họ và tên",
     "username": "Tên người dùng",
-    "rememberMe": "Ghi nhớ đăng nhập"
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "login": {
+      "title": "Chào mừng trở lại",
+      "subtitle": "Đăng nhập để tiếp tục",
+      "button": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "subtitle": "Đăng ký để bắt đầu",
+      "button": "Đăng ký",
+      "hasAccount": "Đã có tài khoản?"
+    },
+    "forgotPassword": {
+      "title": "Đặt lại mật khẩu",
+      "subtitle": "Nhập email để nhận liên kết đặt lại",
+      "button": "Gửi liên kết",
+      "remember": "Nhớ mật khẩu?"
+    },
+    "logout": "Đăng xuất"
   },
   "messages": {
     "welcome": "Chào mừng đến với {{appName}}!",

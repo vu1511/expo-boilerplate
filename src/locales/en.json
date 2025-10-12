@@ -27,16 +27,31 @@
     "about": "About"
   },
   "auth": {
-    "login": "Login",
-    "logout": "Logout",
-    "register": "Register",
-    "forgotPassword": "Forgot Password?",
-    "resetPassword": "Reset Password",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "name": "Full Name",
     "username": "Username",
-    "rememberMe": "Remember Me"
+    "rememberMe": "Remember Me",
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue",
+      "button": "Sign In",
+      "noAccount": "Don't have an account?"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Sign up to get started",
+      "button": "Sign Up",
+      "hasAccount": "Already have an account?"
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive a reset link",
+      "button": "Send Reset Link",
+      "remember": "Remember password?"
+    },
+    "logout": "Logout"
   },
   "messages": {
     "welcome": "Welcome to {{appName}}!",

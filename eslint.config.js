@@ -11,6 +11,14 @@ module.exports = defineConfig([
       'simple-import-sort': require('eslint-plugin-simple-import-sort'),
       '@typescript-eslint': require('@typescript-eslint/eslint-plugin')
     },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: './tsconfig.json'
+        }
+      }
+    },
     rules: {
       'prettier/prettier': [
         'warn',
