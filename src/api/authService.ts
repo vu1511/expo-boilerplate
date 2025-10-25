@@ -51,9 +51,12 @@ export const authService = {
     }
 
     // Real API call would look like:
-    // const response = await fetch('https://api.example.com/auth/login', {
+    // const response = await fetch(`${env.apiUrl}/auth/login`, {
     //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'X-API-Key': env.apiKey,
+    //   },
     //   body: JSON.stringify(credentials),
     // })
     // if (!response.ok) throw new Error('Login failed')
