@@ -1,0 +1,4 @@
+# Encrypted environment files directory
+# This directory stores GPG-encrypted versions of your keys.*.json files
+# These encrypted files SHOULD be committed to git for team sharing
+

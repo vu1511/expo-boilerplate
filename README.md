@@ -12,6 +12,7 @@ A production-ready Expo boilerplate with feature-based architecture, TypeScript,
 - ✅ **Feature-based architecture** - Scalable folder structure
 - ✅ **Authentication example** - Complete auth flow with Zustand
 - ✅ **Dark mode** - Theme support
+- ✅ **Environment variables** - Secure config with react-native-keys
 - ✅ **ESLint + Prettier** - Code formatting
 - ✅ **Jest** - Testing setup
 - ✅ **Husky** - Git hooks
@@ -45,13 +46,42 @@ yarn install
 npm install
 ```
 
-### 2. Start the app
+### 2. Setup environment variables
+
+**For new projects (first time):**
+```bash
+# Create development keys file
+yarn env:setup
+
+# Edit keys.development.json with your configuration
+# Then encrypt for team sharing
+yarn env:encrypt
+```
+
+**For team members (joining existing project):**
+```bash
+# Interactive environment selector
+yarn env
+
+# Select environment (e.g., 1 for development)
+# Enter password (get from team lead)
+# ✅ Environment decrypted and ready!
+```
+
+See [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) for complete guide.
+
+### 3. Start the app
 
 ```bash
 yarn start
-# or
-npm start
+# 🚀 Select Profile for: Start
+#   1. development   ✅ Ready (default)
+#   2. staging       ✅ Ready
+#   3. production    ❌ Not decrypted
+# Select profile (1-3) [default: 1]:
 ```
+
+The app will prompt you to select an environment profile. Just press Enter for development or choose another profile.
 
 Then press:
 - `i` for iOS simulator
@@ -70,20 +100,38 @@ The app includes a complete authentication example:
 ## 🎯 Key Commands
 
 ```bash
-# Development
-yarn start              # Start Expo dev server
-yarn android           # Run on Android
-yarn ios               # Run on iOS
-yarn web               # Run on web
+# Development (with interactive profile selection) ⭐ NEW!
+yarn start              # Start dev server with profile selector
+yarn prebuild           # Prebuild native with profile selector
+yarn ios                # Build & run iOS with profile selector
+yarn android            # Build & run Android with profile selector
+yarn web                # Run on web (no profile needed)
+
+# Direct environment commands (skip profile selection)
+yarn start:dev          # Start with development profile
+yarn start:staging      # Start with staging profile
+yarn start:production   # Start with production profile
+yarn ios:dev            # Build & run iOS with development
+yarn ios:staging        # Build & run iOS with staging
+yarn ios:production     # Build & run iOS with production
+yarn android:dev        # Build & run Android with development
+yarn android:staging    # Build & run Android with staging
+yarn android:production # Build & run Android with production
+
+# Environment Management
+yarn env                # Select and decrypt environment
+yarn env:encrypt        # Encrypt environment files
+yarn env:status         # Check encryption status
+yarn env:verify         # Verify configuration
 
 # Testing
-yarn test              # Run tests
-yarn test:watch        # Watch mode
-yarn test:coverage     # With coverage
+yarn test               # Run tests
+yarn test:watch         # Watch mode
+yarn test:coverage      # With coverage
 
 # Linting
-yarn lint              # Run ESLint
-yarn format            # Format with Prettier
+yarn lint               # Run ESLint
+yarn format             # Format with Prettier
 ```
 
 ## 🏗️ Architecture
@@ -275,8 +323,18 @@ describe('useAuth', () => {
 
 ## 📚 Documentation
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Detailed architecture docs
+- [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - **Complete environment configuration guide** (GPG encryption, profile selector, react-native-keys)
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Detailed architecture docs
 - [src/features/README.md](./src/features/README.md) - Feature-based architecture guide
+
+**Additional References:**
+- [docs/CONFIGURATION.md](./docs/CONFIGURATION.md) - Detailed react-native-keys configuration
+- [docs/ENVIRONMENT-SETUP.md](./docs/ENVIRONMENT-SETUP.md) - GPG encryption setup
+- [docs/PROFILE-SELECTOR.md](./docs/PROFILE-SELECTOR.md) - Interactive profile selector details
+
+**Quick reference:**
+- JSON structure: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
+- JavaScript access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
 
 ## 🔧 Configuration
 

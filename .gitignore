@@ -33,6 +33,15 @@ yarn-error.*
 # local env files
 .env*.local
 
+# react-native-keys (decrypted files - never commit)
+keys.development.json
+keys.staging.json
+keys.production.json
+keys.local.json
+
+# Allow encrypted versions to be committed
+!config/encrypted/*.gpg
+
 # typescript
 *.tsbuildinfo
 
