@@ -36,9 +36,8 @@ This project uses a **feature-based architecture** for scalability and maintaina
 │   └── themed-view.tsx
 │
 ├── hooks/               # Global shared hooks
-│   ├── use-translation.ts
-│   ├── use-theme-color.ts
-│   └── use-color-scheme.ts
+│   ├── useTranslation.ts
+│   └── useTheme.ts
 │
 ├── locales/            # i18n translations
 │   ├── en.json
@@ -268,7 +267,7 @@ We use **i18next** for translations.
 
 2. Use in components:
 ```typescript
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 function MyComponent() {
   const { t } = useTranslation()

@@ -1,6 +1,5 @@
-import { StyleSheet, Text, type TextProps } from 'react-native'
-
-import { useThemeColor } from '@/hooks/use-theme-color'
+import { Text, type TextProps } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string
@@ -8,13 +7,11 @@ export type ThemedTextProps = TextProps & {
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link'
 }
 
-export function ThemedText({ style, lightColor, darkColor, type = 'default', ...rest }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text')
-
+export function ThemedText({ style, type = 'default', ...rest }: ThemedTextProps) {
   return (
     <Text
       style={[
-        { color },
+        styles.text,
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -27,28 +24,39 @@ export function ThemedText({ style, lightColor, darkColor, type = 'default', ...
   )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(({ colors, typography }) => ({
+  text: {
+    color: colors.text,
+  },
   default: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.body.fontSize,
+    lineHeight: typography.body.lineHeight,
+    fontWeight: typography.body.fontWeight,
   },
   defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
+    fontFamily: typography.bodyMedium.fontFamily,
+    fontSize: typography.bodyMedium.fontSize,
+    lineHeight: typography.bodyMedium.lineHeight,
+    fontWeight: typography.bodyMedium.fontWeight,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
+    fontFamily: typography.h1.fontFamily,
+    fontSize: typography.h1.fontSize,
+    lineHeight: typography.h1.lineHeight,
+    fontWeight: typography.h1.fontWeight,
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: typography.h3.fontFamily,
+    fontSize: typography.h3.fontSize,
+    lineHeight: typography.h3.lineHeight,
+    fontWeight: typography.h3.fontWeight,
   },
   link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
+    fontFamily: typography.body.fontFamily,
+    fontSize: typography.body.fontSize,
+    lineHeight: typography.body.lineHeight,
+    fontWeight: typography.body.fontWeight,
+    color: colors.tint,
   },
-})
+}))

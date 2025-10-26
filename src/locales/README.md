@@ -16,7 +16,7 @@ locales/
 └── index.ts          # i18n configuration
 
 hooks/
-└── use-translation.ts # Custom translation hook
+└── useTranslation.ts # Custom translation hook
 ```
 
 ## 🚀 Quick Start
@@ -24,7 +24,7 @@ hooks/
 ### Basic Usage
 
 ```typescript
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function MyComponent() {
   const { t } = useTranslation()
@@ -255,7 +255,7 @@ const LANGUAGES = [
 ### Programmatically
 
 ```typescript
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 const { changeLanguage } = useTranslation()
 

@@ -1,9 +1,10 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { LanguageCode, useTranslation } from '@/hooks/use-translation'
+import { LanguageCode, useTranslation } from '@/hooks/useTranslation'
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -40,39 +41,39 @@ export function LanguageSwitcher() {
   )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create((theme) => ({
   container: {
     flexDirection: 'row',
-    gap: 12,
+    gap: theme.spacing.sm,
     justifyContent: 'center',
-    paddingVertical: 8,
+    paddingVertical: theme.spacing.xs,
   },
   languageButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
+    gap: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#F5F5F5',
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.background,
     minWidth: 120,
   },
   activeLanguageButton: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: theme.colors.tint,
+    borderColor: theme.colors.tint,
   },
   flag: {
-    fontSize: 20,
+    fontSize: theme.fontSize.lg,
   },
   languageText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.text,
   },
   activeLanguageText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: theme.colors.background,
+    fontWeight: theme.fontWeight.semiBold,
   },
-})
+}))

@@ -7,6 +7,23 @@ import { MMKV } from 'react-native-mmkv'
 
 const mmkv = new MMKV()
 
+/**
+ * Centralized storage keys to avoid magic strings
+ * Follows camelCase convention for JavaScript consistency
+ */
+export const storageKeys = {
+  // Theme preferences
+  themeMode: 'themeMode',
+
+  // Auth (example for future use)
+  // authToken: 'authToken',
+  // authRefreshToken: 'authRefreshToken',
+
+  // User preferences (example for future use)
+  // userLanguage: 'userLanguage',
+  // userNotifications: 'userNotifications',
+} as const
+
 export const storage = {
   getItem: (name: string): string | null => {
     try {

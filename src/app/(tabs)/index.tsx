@@ -1,20 +1,22 @@
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
-import { Platform, StyleSheet } from 'react-native'
+import { Platform, TouchableOpacity, View } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
 import { HelloWave } from '@/components/hello-wave'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import ParallaxScrollView from '@/components/parallax-scroll-view'
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { useTranslation } from '@/hooks/use-translation'
+import { useTheme } from '@/hooks/useTheme'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function HomeScreen() {
   const { t } = useTranslation()
+  const { currentTheme, themeMode, setThemeMode } = useTheme()
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={<Image source={require('@/assets/images/partial-react-logo.png')} style={styles.reactLogo} />}
     >
       <ThemedView style={styles.titleContainer}>
@@ -25,6 +27,41 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">{t('settings.language')}</ThemedText>
         <LanguageSwitcher />
         <ThemedText style={styles.hintText}>{t('settings.changeLanguage')}</ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Theme</ThemedText>
+        <View style={styles.themeSwitcher}>
+          <TouchableOpacity
+            style={[styles.themeButton, themeMode === 'light' && styles.themeButtonActive]}
+            onPress={() => setThemeMode('light')}
+          >
+            <ThemedText style={[styles.themeButtonText, themeMode === 'light' && styles.themeButtonTextActive]}>
+              ☀️ Light
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.themeButton, themeMode === 'dark' && styles.themeButtonActive]}
+            onPress={() => setThemeMode('dark')}
+          >
+            <ThemedText style={[styles.themeButtonText, themeMode === 'dark' && styles.themeButtonTextActive]}>
+              🌙 Dark
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.themeButton, themeMode === 'system' && styles.themeButtonActive]}
+            onPress={() => setThemeMode('system')}
+          >
+            <ThemedText style={[styles.themeButtonText, themeMode === 'system' && styles.themeButtonTextActive]}>
+              📱 System
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+        <ThemedText style={styles.hintText}>
+          Current theme: {currentTheme} {themeMode !== 'system' && `(${themeMode} mode)`}
+        </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -71,15 +108,21 @@ export default function HomeScreen() {
   )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(({ spacing, typography, colors, borderRadius }) => ({
+  container: {
+    backgroundColor: colors.background,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.xs,
+  },
+  title: {
+    fontFamily: typography.body,
   },
   stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
   },
   reactLogo: {
     height: 178,
@@ -93,4 +136,31 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     textAlign: 'center',
   },
-})
+  themeSwitcher: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    justifyContent: 'center',
+  },
+  themeButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  themeButtonActive: {
+    backgroundColor: colors.tint,
+    borderColor: colors.tint,
+  },
+  themeButtonText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  themeButtonTextActive: {
+    color: colors.background,
+    fontWeight: '600',
+  },
+}))

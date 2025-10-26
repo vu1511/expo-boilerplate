@@ -1,21 +1,16 @@
 import type { PropsWithChildren, ReactElement } from 'react'
-import { StyleSheet } from 'react-native'
 import Animated, { interpolate, useAnimatedRef, useAnimatedStyle, useScrollOffset } from 'react-native-reanimated'
+import { StyleSheet } from 'react-native-unistyles'
 
 import { ThemedView } from '@/components/themed-view'
-import { useColorScheme } from '@/hooks/use-color-scheme'
-import { useThemeColor } from '@/hooks/use-theme-color'
 
 const HEADER_HEIGHT = 250
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement
-  headerBackgroundColor: { dark: string; light: string }
 }>
 
-export default function ParallaxScrollView({ children, headerImage, headerBackgroundColor }: Props) {
-  const backgroundColor = useThemeColor({}, 'background')
-  const colorScheme = useColorScheme() ?? 'light'
+export default function ParallaxScrollView({ children, headerImage }: Props) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOffset = useScrollOffset(scrollRef)
   const headerAnimatedStyle = useAnimatedStyle(() => {
@@ -36,29 +31,27 @@ export default function ParallaxScrollView({ children, headerImage, headerBackgr
   })
 
   return (
-    <Animated.ScrollView ref={scrollRef} style={{ backgroundColor, flex: 1 }} scrollEventThrottle={16}>
-      <Animated.View
-        style={[styles.header, { backgroundColor: headerBackgroundColor[colorScheme] }, headerAnimatedStyle]}
-      >
-        {headerImage}
-      </Animated.View>
+    <Animated.ScrollView ref={scrollRef} style={styles.container} scrollEventThrottle={16}>
+      <Animated.View style={[styles.header, headerAnimatedStyle]}>{headerImage}</Animated.View>
       <ThemedView style={styles.content}>{children}</ThemedView>
     </Animated.ScrollView>
   )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(({ colors, spacing }) => ({
   container: {
     flex: 1,
+    color: colors.background,
   },
   header: {
     height: HEADER_HEIGHT,
     overflow: 'hidden',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
-    padding: 32,
-    gap: 16,
+    padding: spacing.xxl,
+    gap: spacing.md,
     overflow: 'hidden',
   },
-})
+}))

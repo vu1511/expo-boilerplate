@@ -223,7 +223,7 @@ export default function LoginScreen() {
 The app supports multiple languages using i18next:
 
 ```typescript
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 function MyComponent() {
   const { t, changeLanguage } = useTranslation()

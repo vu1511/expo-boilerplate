@@ -9,7 +9,7 @@ import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-nati
 
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { useTranslation } from '@/hooks/use-translation'
+import { useTranslation } from '@/hooks/useTranslation'
 
 import { useAuthForm } from '../hooks/useAuthForm'
 import type { LoginCredentials } from '../types'

@@ -1,19 +1,19 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native-unistyles'
 
-export const styles = StyleSheet.create({
+export const styles = StyleSheet.create(({ colors, borderRadius }) => ({
   triggerBtn: {
     alignSelf: 'flex-start',
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.palette.overlay50,
   },
   popover: {
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
     overflow: 'hidden',
     alignSelf: 'flex-start',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   visible: {
     opacity: 1,
@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     opacity: 0,
   },
   shadow: {
-    shadowColor: '#424242',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 4,
       height: 4,
@@ -31,4 +31,4 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-})
+}))
