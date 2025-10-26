@@ -16,6 +16,7 @@ A production-ready Expo boilerplate with feature-based architecture, TypeScript,
 - ✅ **ESLint + Prettier** - Code formatting
 - ✅ **Jest** - Testing setup
 - ✅ **Husky** - Git hooks
+- ✅ **Custom Icon System** - Path-based SVG icons with theme integration
 
 ## 📁 Project Structure
 
@@ -28,10 +29,18 @@ A production-ready Expo boilerplate with feature-based architecture, TypeScript,
 │   └── auth/          # Auth feature (complete example)
 ├── components/         # Shared UI components
 ├── hooks/             # Global hooks
+├── lib/               # Library utilities
+│   └── icons/         # Icon system (path-based)
 ├── locales/           # i18n translations
 ├── constants/         # Global constants
 ├── utils/             # Global utilities
 └── types/             # Global TypeScript types
+
+/assets/
+└── icons/             # Icon definitions
+    ├── home.tsx       # Individual icon files
+    ├── edit.tsx       # Path-based icons
+    └── index.ts       # Central exports
 ```
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed documentation.
@@ -241,8 +250,9 @@ Add translations in `src/locales/`:
 - `en.json` - English
 - `vi.json` - Vietnamese
 
-## 🎨 Theming
+## 🎨 Theming & Icons
 
+### Theming
 Components automatically adapt to dark/light mode:
 
 ```typescript
@@ -256,6 +266,32 @@ function MyScreen() {
     </ThemedView>
   )
 }
+```
+
+### Icon System
+Custom path-based SVG icon system with theme integration:
+
+```typescript
+import { Home, Edit, ChevronDown } from '@/assets/icons'
+
+<Home size="lg" />
+<Edit size={28} fill="#FF0000" />
+<ChevronDown size="md" fill={theme.colors.tint} />
+```
+
+**Available icons:** Home, Explore, Edit, Delete, Plus, Search, Close, Settings, ChevronDown/Up/Left/Right, CheckCircle, AlertCircle
+
+**Creating new icons:**
+```typescript
+// assets/icons/my-icon.tsx
+import { createSinglePathSVG } from '@/lib/icons'
+
+export const MyIcon = createSinglePathSVG({
+  path: 'M12 2L2 7v10l10 5 10-5V7L12 2z'
+})
+
+// Export from index.ts
+export * from './my-icon'
 ```
 
 ## 📦 State Management
@@ -326,15 +362,12 @@ describe('useAuth', () => {
 - [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - **Complete environment configuration guide** (GPG encryption, profile selector, react-native-keys)
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Detailed architecture docs
 - [src/features/README.md](./src/features/README.md) - Feature-based architecture guide
-
-**Additional References:**
-- [docs/CONFIGURATION.md](./docs/CONFIGURATION.md) - Detailed react-native-keys configuration
-- [docs/ENVIRONMENT-SETUP.md](./docs/ENVIRONMENT-SETUP.md) - GPG encryption setup
-- [docs/PROFILE-SELECTOR.md](./docs/PROFILE-SELECTOR.md) - Interactive profile selector details
+- [assets/icons/README.md](./assets/icons/README.md) - Icon system guide
 
 **Quick reference:**
-- JSON structure: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
-- JavaScript access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
+- Environment: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
+- Access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
+- Icons: `import { Home, Edit } from '@/assets/icons'`
 
 ## 🔧 Configuration
 

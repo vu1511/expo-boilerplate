@@ -2,8 +2,8 @@ import { Tabs } from 'expo-router'
 import React from 'react'
 import { useUnistyles } from 'react-native-unistyles'
 
+import { Explore, Home } from '@/assets/icons'
 import { HapticTab } from '@/components/haptic-tab'
-import { IconSymbol } from '@/components/ui/icon-symbol'
 import { useTranslation } from '@/hooks/useTranslation'
 
 export default function TabLayout() {
@@ -34,14 +34,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t('navigation.home'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <Home size={28} fill={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           title: t('navigation.explore'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <Explore size={28} fill={color} />,
         }}
       />
     </Tabs>
