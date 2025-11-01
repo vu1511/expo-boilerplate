@@ -111,6 +111,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    [
+      'expo-build-properties',
+      {
+        android: {
+          ndkVersion: '27.1.12297006',
+        },
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,
