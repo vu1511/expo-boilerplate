@@ -1,0 +1,14 @@
+diff --git a/node_modules/react-native-keys/android/build.gradle b/node_modules/react-native-keys/android/build.gradle
+index 6e40322..a68821b 100644
+--- a/node_modules/react-native-keys/android/build.gradle
++++ b/node_modules/react-native-keys/android/build.gradle
+@@ -94,6 +94,9 @@ if(!found){
+   while (basePath) {
+     nodeModulesDir = Paths.get(basePath.toString(), "node_modules")
+     reactNativeDir = Paths.get(nodeModulesDir.toString(), "react-native/android")
++    if (!reactNativeDir.toFile().exists()) {
++      reactNativeDir = Paths.get(nodeModulesDir.toString(), "react-native/ReactAndroid")
++    }
+     if (nodeModulesDir.toFile().exists() && reactNativeDir.toFile().exists()) {
+       found = true
+       break;

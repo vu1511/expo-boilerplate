@@ -2,9 +2,10 @@ import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import { StyleSheet } from 'react-native-unistyles'
 
-import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { LanguageCode, useTranslation } from '@/hooks/useTranslation'
+
+import { Typography } from './typography'
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -30,10 +31,10 @@ export function LanguageSwitcher() {
             style={[styles.languageButton, isActive && styles.activeLanguageButton]}
             activeOpacity={0.7}
           >
-            <ThemedText style={styles.flag}>{language.flag}</ThemedText>
-            <ThemedText style={[styles.languageText, isActive && styles.activeLanguageText]}>
+            <Typography style={styles.flag}>{language.flag}</Typography>
+            <Typography style={[styles.languageText, isActive && styles.activeLanguageText]}>
               {language.name}
-            </ThemedText>
+            </Typography>
           </TouchableOpacity>
         )
       })}
@@ -72,8 +73,5 @@ const styles = StyleSheet.create((theme) => ({
     fontWeight: theme.fontWeight.medium,
     color: theme.colors.text,
   },
-  activeLanguageText: {
-    color: theme.colors.background,
-    fontWeight: theme.fontWeight.semiBold,
-  },
+  activeLanguageText: {},
 }))

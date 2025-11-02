@@ -151,6 +151,18 @@ export const typography = {
     lineHeight: lineHeight.sm,
     fontWeight: fontWeight.medium,
   },
+  captionSmall: {
+    fontFamily: fontFamily.inter.regular,
+    fontSize: fontSize.xs,
+    lineHeight: lineHeight.xs,
+    fontWeight: fontWeight.regular,
+  },
+  captionSmallMedium: {
+    fontFamily: fontFamily.inter.medium,
+    fontSize: fontSize.xs,
+    lineHeight: lineHeight.xs,
+    fontWeight: fontWeight.medium,
+  },
 
   // Button text styles
   button: {
