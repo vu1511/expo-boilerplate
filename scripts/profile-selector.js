@@ -34,7 +34,13 @@ function getEnvironmentStatus() {
 }
 
 function displayEnvironmentMenu(envStatuses, command) {
-  const commandName = command === 'start' ? 'Start' : 'Prebuild'
+  const commandNames = {
+    start: 'Start',
+    prebuild: 'Prebuild',
+    ios: 'iOS',
+    android: 'Android',
+  }
+  const commandName = commandNames[command] || command
 
   console.log(`\n🚀 Select Profile for: ${commandName}\n`)
 
@@ -94,7 +100,8 @@ async function selectProfile(command) {
     console.error('  1. yarn env:setup           # Create example file')
     console.error('  2. Edit keys.*.json files   # Add your values')
     console.error('  3. yarn env:encrypt         # Encrypt files')
-    console.error('  4. yarn start               # Try again\n')
+    console.error('  4. yarn env                 # Decrypt environment')
+    console.error(`  5. Try again with: yarn ${command}\n`)
     rl.close()
     process.exit(1)
   }
@@ -103,7 +110,7 @@ async function selectProfile(command) {
 
   // If only one environment is available and ready, use it automatically
   const readyEnvs = envStatuses.filter((env) => env.decrypted)
-  if (readyEnvs.length === 1 && command === 'start') {
+  if (readyEnvs.length === 1) {
     const selectedEnv = readyEnvs[0].name
     console.log(`📦 Auto-selected: ${selectedEnv} (only available environment)\n`)
     rl.close()

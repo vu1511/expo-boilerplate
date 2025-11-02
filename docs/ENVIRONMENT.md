@@ -360,7 +360,7 @@ yarn prebuild
 Features:
 - ✅ Visual status indicators
 - 🔓 Auto-decrypt if needed (prompts for password)
-- 🚀 Smart defaults (auto-select if only one available)
+- 🚀 Smart defaults (auto-select if only one environment available - works for all commands: start, prebuild, ios, android)
 - ⌨️ Press Enter for default
 
 **Example with Auto-Decrypt:**

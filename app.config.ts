@@ -20,28 +20,12 @@ const exampleKeysPath = path.join(__dirname, 'keys.example.json')
 
 console.log(`📦 Loading keys from: ${keysFileName}`)
 
-// Load default values from keys.example.json
-let defaultKeys: any = {
+// Load keys directly from JSON file (not from react-native-keys module)
+// This avoids the "not available yet" warning during prebuild
+let keys: Record<string, any> = {
   public: {},
   secure: {},
 }
-
-try {
-  if (fs.existsSync(exampleKeysPath)) {
-    const exampleData = fs.readFileSync(exampleKeysPath, 'utf-8')
-    defaultKeys = JSON.parse(exampleData)
-    console.log(`📋 Loaded defaults from keys.example.json`)
-  } else {
-    console.warn(`⚠️  keys.example.json not found, using hardcoded defaults`)
-  }
-} catch (error) {
-  console.error(`❌ Error loading keys.example.json:`, error)
-  console.warn('   Using hardcoded defaults.')
-}
-
-// Load keys directly from JSON file (not from react-native-keys module)
-// This avoids the "not available yet" warning during prebuild
-let keys: any = defaultKeys
 
 try {
   if (fs.existsSync(keysFilePath)) {
@@ -50,26 +34,45 @@ try {
     console.log(`✅ Loaded keys from ${keysFileName}`)
   } else {
     console.warn(`⚠️  Keys file not found: ${keysFileName}`)
-    console.warn('   Using default values from keys.example.json')
+
+    if (fs.existsSync(exampleKeysPath)) {
+      const exampleData = fs.readFileSync(exampleKeysPath, 'utf-8')
+      keys = JSON.parse(exampleData)
+      console.log(`📋 Using defaults from keys.example.json`)
+    } else {
+      console.warn(`⚠️  keys.example.json also not found, using empty defaults`)
+    }
   }
 } catch (error) {
   console.error(`❌ Error loading keys from ${keysFileName}:`, error)
-  console.warn('   Using default values from keys.example.json')
+
+  try {
+    if (fs.existsSync(exampleKeysPath)) {
+      const exampleData = fs.readFileSync(exampleKeysPath, 'utf-8')
+      keys = JSON.parse(exampleData)
+      console.warn('   Using default values from keys.example.json')
+    } else {
+      console.warn('   Using empty defaults')
+    }
+  } catch (exampleError) {
+    console.error(`❌ Error loading keys.example.json:`, exampleError)
+    console.warn('   Using empty defaults')
+  }
 }
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: keys.public.APP_NAME || defaultKeys.public.APP_NAME,
-  slug: keys.public.APP_SLUG || defaultKeys.public.APP_SLUG,
-  version: keys.public.APP_VERSION || defaultKeys.public.APP_VERSION,
+  name: keys.public.APP_NAME,
+  slug: keys.public.APP_SLUG,
+  version: keys.public.APP_VERSION,
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: keys.public.APP_SCHEME || defaultKeys.public.APP_SCHEME,
+  scheme: keys.public.APP_SCHEME,
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: keys.public.IOS_BUNDLE_ID || defaultKeys.public.IOS_BUNDLE_ID,
+    bundleIdentifier: keys.public.IOS_BUNDLE_ID,
   },
   android: {
     adaptiveIcon: {
@@ -80,7 +83,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
-    package: keys.public.ANDROID_PACKAGE || defaultKeys.public.ANDROID_PACKAGE,
+    package: keys.public.ANDROID_PACKAGE,
   },
   web: {
     output: 'static',
