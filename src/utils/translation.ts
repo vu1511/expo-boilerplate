@@ -1,4 +1,7 @@
-import i18n from '@/locales'
+import * as Localization from 'expo-localization'
+
+import { storage } from '@/lib/storage'
+import i18n, { languageCodes } from '@/locales'
 import type { ChangeLanguageFunction, LanguageCode, TFunction } from '@/types/i18next'
 
 /**
@@ -58,6 +61,68 @@ export const getAvailableLanguages = (): LanguageCode[] => {
  * @param language - Language code to check
  * @returns True if language is supported
  */
-export const isLanguageSupported = (language: LanguageCode): boolean => {
-  return getAvailableLanguages().includes(language)
+export const isLanguageSupported = (language: string): language is LanguageCode => {
+  return languageCodes.includes(language as LanguageCode)
+}
+
+/**
+ * Get the saved language preference from storage
+ * @returns Saved language code or null if not found
+ */
+export const getSavedLanguage = (): LanguageCode | null => {
+  const savedLanguage = storage.getItem(storage.keys.userLanguage)
+  if (savedLanguage && isLanguageSupported(savedLanguage)) {
+    return savedLanguage as LanguageCode
+  }
+  return null
+}
+
+/**
+ * Get the system/device language
+ * @returns System language code or null if not supported
+ */
+export const getSystemLanguage = (): LanguageCode | null => {
+  const systemLanguage = Localization.getLocales()[0]?.languageCode || 'en'
+  if (isLanguageSupported(systemLanguage)) {
+    return systemLanguage
+  }
+  return null
+}
+
+/**
+ * Get the language to use based on priority:
+ * 1. Saved preference
+ * 2. System locale
+ * 3. Default (en)
+ *
+ * @returns Language code to use
+ */
+export const getPreferredLanguage = (): LanguageCode => {
+  const savedLanguage = getSavedLanguage()
+  if (savedLanguage) {
+    return savedLanguage
+  }
+
+  const systemLanguage = getSystemLanguage()
+  if (systemLanguage) {
+    return systemLanguage
+  }
+
+  return 'en'
+}
+
+/**
+ * Save language preference to storage
+ * @param language - Language code to save
+ */
+export const saveLanguage = (language: LanguageCode): void => {
+  storage.setItem(storage.keys.userLanguage, language)
+}
+
+/**
+ * Clear saved language preference
+ * This will cause the app to use system locale on next launch
+ */
+export const clearSavedLanguage = (): void => {
+  storage.removeItem(storage.keys.userLanguage)
 }

@@ -1,6 +1,6 @@
 import { Appearance } from 'react-native'
 
-import { storage, storageKeys } from '@/lib/storage'
+import { storage } from '@/lib/storage'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -11,7 +11,7 @@ export type ThemeMode = 'light' | 'dark' | 'system'
  * @returns 'light' | 'dark'
  */
 export const getInitialTheme = (): 'light' | 'dark' => {
-  const savedMode = storage.getItem(storageKeys.themeMode) as ThemeMode
+  const savedMode = storage.getItem(storage.keys.themeMode) as ThemeMode
 
   if (savedMode === 'system' || !savedMode) {
     return Appearance.getColorScheme() ?? 'light'
@@ -26,7 +26,7 @@ export const getInitialTheme = (): 'light' | 'dark' => {
  * @returns ThemeMode
  */
 export const getThemeMode = (): ThemeMode => {
-  return (storage.getItem(storageKeys.themeMode) as ThemeMode) ?? 'system'
+  return (storage.getItem(storage.keys.themeMode) as ThemeMode) ?? 'system'
 }
 
 /**
@@ -51,5 +51,5 @@ export const getCurrentTheme = (): 'light' | 'dark' => {
  * @param mode - Theme mode to set
  */
 export const setThemeMode = (mode: ThemeMode): void => {
-  storage.setItem(storageKeys.themeMode, mode)
+  storage.setItem(storage.keys.themeMode, mode)
 }

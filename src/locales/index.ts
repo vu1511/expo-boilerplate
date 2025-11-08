@@ -1,15 +1,13 @@
-import * as Localization from 'expo-localization'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
-// Import translation files
+import { LanguageCode } from '@/types'
+import { setDateLocale } from '@/utils/date'
+import { getPreferredLanguage, saveLanguage } from '@/utils/translation'
+
 import en from './en.json'
 import vi from './vi.json'
 
-// Get device locale
-const deviceLanguage = Localization.getLocales()[0]?.languageCode || 'en'
-
-// Supported languages
 const resources = {
   en: {
     translation: en,
@@ -19,12 +17,15 @@ const resources = {
   },
 }
 
-// Initialize i18next
+export const languageCodes = Object.keys(resources) as LanguageCode[]
+
+const initialLanguage = getPreferredLanguage()
+
 i18next
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
-    lng: deviceLanguage, // default language from device
+    lng: initialLanguage, // Priority: Storage > System Locale > Fallback
     fallbackLng: 'en', // fallback language if translation is missing
     compatibilityJSON: 'v4', // Updated for React Native
     interpolation: {
@@ -34,5 +35,11 @@ i18next
       useSuspense: false, // Important for React Native
     },
   })
+
+i18next.on('languageChanged', (lng) => {
+  const languageCode = lng as LanguageCode
+  saveLanguage(languageCode)
+  setDateLocale(languageCode)
+})
 
 export default i18next

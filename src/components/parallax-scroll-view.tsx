@@ -50,7 +50,7 @@ const styles = StyleSheet.create(({ colors, spacing }) => ({
   },
   content: {
     flex: 1,
-    padding: spacing.xxl,
+    padding: spacing.md,
     gap: spacing.md,
     overflow: 'hidden',
   },

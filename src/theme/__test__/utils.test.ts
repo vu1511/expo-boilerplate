@@ -4,28 +4,25 @@ import { storage } from '@/lib/storage'
 
 import { getCurrentTheme, getInitialTheme, getThemeMode, setThemeMode } from '../utils'
 
-// Mock react-native Appearance
 jest.mock('react-native', () => ({
   Appearance: {
     getColorScheme: jest.fn(),
   },
 }))
 
-// Mock storage
 jest.mock('@/lib/storage', () => ({
   storage: {
+    keys: {
+      themeMode: 'themeMode',
+    },
     getItem: jest.fn(),
     setItem: jest.fn(),
     removeItem: jest.fn(),
-  },
-  storageKeys: {
-    themeMode: 'themeMode',
   },
 }))
 
 describe('Theme Utils', () => {
   beforeEach(() => {
-    // Clear all mocks before each test
     jest.clearAllMocks()
   })
 

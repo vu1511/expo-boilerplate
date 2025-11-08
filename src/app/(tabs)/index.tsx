@@ -6,6 +6,7 @@ import { PopoverPlacement } from 'react-native-popover-view'
 import { StyleSheet } from 'react-native-unistyles'
 
 import { Typography } from '@/components'
+import { DateTimeDemo } from '@/components/date-time-demo'
 import { HelloWave } from '@/components/hello-wave'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import ParallaxScrollView from '@/components/parallax-scroll-view'
@@ -18,7 +19,6 @@ export default function HomeScreen() {
   const { t } = useTranslation()
   const { currentTheme, themeMode, setThemeMode } = useTheme()
 
-  // Refs for popover triggers
   const popoverTrigger1Ref = useRef<View>(null)
   const popoverTrigger2Ref = useRef<View>(null)
   const popoverTrigger3Ref = useRef<View>(null)
@@ -36,6 +36,8 @@ export default function HomeScreen() {
         <LanguageSwitcher />
         <Typography style={styles.hintText}>{t('settings.changeLanguage')}</Typography>
       </View>
+
+      <DateTimeDemo />
 
       <View style={styles.stepContainer}>
         <Typography>Toast Service</Typography>

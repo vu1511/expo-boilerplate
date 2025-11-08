@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation as useTranslationI18next } from 'react-i18next'
 
 import type { ChangeLanguageFunction, LanguageCode, TFunction, TranslationKey } from '@/types/i18next'
@@ -34,12 +34,15 @@ export const useTranslation = () => {
     [i18n],
   )
 
-  return {
-    t,
-    changeLanguage,
-    currentLanguage: i18n.language,
-    isRTL: i18n.dir() === 'rtl',
-  }
+  return useMemo(
+    () => ({
+      t,
+      changeLanguage,
+      currentLanguage: i18n.language,
+      isRTL: i18n.dir() === 'rtl',
+    }),
+    [changeLanguage, i18n, t],
+  )
 }
 
 export type { ChangeLanguageFunction, LanguageCode, TFunction, TranslationKey }
