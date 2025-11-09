@@ -3,7 +3,6 @@ declare module 'react-native-keys' {
     // PUBLIC KEYS - Regular variables
     APP_NAME: string
     APP_SLUG: string
-    APP_VERSION: string
     APP_SCHEME: string
     IOS_BUNDLE_ID: string
     ANDROID_PACKAGE: string

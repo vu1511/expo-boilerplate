@@ -1,0 +1,110 @@
+name: Build Preview
+
+# Trigger on push to develop branch or manual dispatch
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: choice
+        default: 'android'
+        options:
+          - android
+          - ios
+      profile:
+        description: 'Build profile'
+        required: true
+        type: choice
+        default: 'staging'
+        options:
+          - staging
+          - preview
+
+jobs:
+  build:
+    name: Build Preview - ${{ github.event.inputs.platform || 'android' }}
+    runs-on: ${{ github.event.inputs.platform == 'ios' && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: 45
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: 🔧 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: ☕ Setup Java (Android)
+        if: github.event.inputs.platform != 'ios'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📥 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔐 Decrypt environment keys
+        run: |
+          PROFILE=${{ github.event.inputs.profile || 'staging' }}
+          # If GPG decryption is set up
+          if [ -f "config/encrypted/keys.$PROFILE.json.gpg" ]; then
+            gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+              --output "keys.$PROFILE.json" "config/encrypted/keys.$PROFILE.json.gpg"
+          fi
+        continue-on-error: true
+
+      - name: 📝 Get version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 📱 Build Locally
+        run: |
+          PROFILE=${{ github.event.inputs.profile || 'staging' }}
+          PLATFORM=${{ github.event.inputs.platform || 'android' }}
+          eas build --platform $PLATFORM --profile $PROFILE --local --non-interactive --output ./build-output
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-${{ github.event.inputs.platform || 'android' }}-${{ steps.version.outputs.version }}
+          path: build-output
+          retention-days: 7
+
+      - name: 💬 Comment PR with download link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const platform = '${{ github.event.inputs.platform || 'android' }}';
+            const version = '${{ steps.version.outputs.version }}';
+            const message = `## 🚀 Preview Build Complete
+            
+            **Platform:** ${platform}
+            **Version:** ${version}
+            **Profile:** ${{ github.event.inputs.profile || 'staging' }}
+            
+            📥 Download from the Actions artifacts tab`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+

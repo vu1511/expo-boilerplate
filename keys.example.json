@@ -4,11 +4,12 @@
     "APP_SLUG": "expo-boilerplate",
     "APP_SCHEME": "expoboilerplate",
     "APP_ENV": "development",
-    "IOS_BUNDLE_ID": "com.yourcompany.yourapp",
-    "ANDROID_PACKAGE": "com.yourcompany.yourapp",
+    "IOS_BUNDLE_ID": "com.expoboilerplate",
+    "ANDROID_PACKAGE": "com.expoboilerplate",
     "API_URL": "https://api.example.com",
     "ENABLE_ANALYTICS": "false",
-    "ENABLE_DEBUG": "true"
+    "ENABLE_DEBUG": "true",
+    "EAS_PROJECT_ID": "your-eas-project-id-here"
   },
   "secure": {
     "API_KEY": "your-api-key-here",

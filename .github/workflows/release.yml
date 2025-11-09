@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - auto
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: 📥 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: ⚙️ Configure git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: 🚀 Run standard-version
+        run: |
+          if [ "${{ github.event.inputs.release_type }}" = "auto" ]; then
+            yarn release --skip.commit --skip.tag
+          else
+            yarn release --release-as ${{ github.event.inputs.release_type }} --skip.commit --skip.tag
+          fi
+
+      - name: 📝 Get new version
+        id: version
+        run: |
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📱 New version: $NEW_VERSION"
+
+      - name: 📝 Extract release notes
+        id: release_notes
+        run: |
+          NOTES=$(sed -n '/^## \[/,/^## \[/p' CHANGELOG.md | sed '$d' | tail -n +2)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 💾 Commit changes
+        run: |
+          git add .
+          git commit -m "chore(release): v${{ steps.version.outputs.new_version }}"
+          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Release v${{ steps.version.outputs.new_version }}"
+
+      - name: 🚀 Push changes
+        run: |
+          git push --follow-tags origin main
+
+      - name: 📢 Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.new_version }}
+          release_name: Release v${{ steps.version.outputs.new_version }}
+          body: ${{ steps.release_notes.outputs.notes }}
+          draft: false
+          prerelease: false
+
+      - name: ✅ Summary
+        run: |
+          echo "✅ Release v${{ steps.version.outputs.new_version }} created successfully!"
+          echo "📝 CHANGELOG updated"
+          echo "🏷️  Git tag created and pushed"
+          echo "📢 GitHub Release created"
+          echo ""
+          echo "Next: Trigger 'Build & Distribute' workflow to build and deploy the app"
+

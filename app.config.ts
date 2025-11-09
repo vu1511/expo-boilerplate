@@ -26,9 +26,9 @@ console.log(`📦 Loading keys from: ${keysFileName}`)
 
 // Load keys directly from JSON file (not from react-native-keys module)
 // This avoids the "not available yet" warning during prebuild
+// Avoid loading secure keys directly here
 let keys: Record<string, any> = {
   public: {},
-  secure: {},
 }
 
 try {
@@ -84,6 +84,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: keys.public.APP_SCHEME,
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
+  extra: {
+    eas: {
+      projectId: keys.public.EAS_PROJECT_ID,
+    },
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: keys.public.IOS_BUNDLE_ID,

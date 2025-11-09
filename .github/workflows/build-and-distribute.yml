@@ -1,0 +1,147 @@
+name: Build & Distribute
+
+# Trigger manually or on release tags
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+      profile:
+        description: 'Build profile'
+        required: true
+        type: choice
+        default: 'staging'
+        options:
+          - staging
+          - production
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        include:
+          - platform: android
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: 🔧 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: ☕ Setup Java (Android)
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📥 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔐 Decrypt environment keys
+        run: |
+          PROFILE=${{ github.event.inputs.profile || 'production' }}
+          # If GPG decryption is set up
+          if [ -f "config/encrypted/keys.$PROFILE.json.gpg" ]; then
+            gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+              --output "keys.$PROFILE.json" "config/encrypted/keys.$PROFILE.json.gpg"
+          fi
+        continue-on-error: true
+
+      - name: 📝 Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📱 App version: $VERSION"
+
+      - name: 📱 Build ${{ matrix.platform }} Locally
+        run: |
+          PROFILE=${{ github.event.inputs.profile || 'production' }}
+          eas build --platform ${{ matrix.platform }} --profile $PROFILE --local --non-interactive --output ./build-output.${{ matrix.platform }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ matrix.platform }}-${{ steps.version.outputs.version }}
+          path: build-output.${{ matrix.platform }}
+          retention-days: 30
+
+      - name: 📢 Build complete
+        run: |
+          echo "✅ ${{ matrix.platform }} build complete!"
+          echo "📱 Version: ${{ steps.version.outputs.version }}"
+          echo "📦 Profile: ${{ github.event.inputs.profile || 'production' }}"
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📝 Get version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 📝 Extract release notes
+        id: release_notes
+        run: |
+          if [ -f "CHANGELOG.md" ]; then
+            NOTES=$(sed -n '/^## \[/,/^## \[/p' CHANGELOG.md | sed '$d' | tail -n +2)
+          else
+            NOTES="Release version ${{ steps.version.outputs.version }}"
+          fi
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: 📢 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.version.outputs.version }}
+          body: ${{ steps.release_notes.outputs.notes }}
+          files: |
+            ./artifacts/**/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

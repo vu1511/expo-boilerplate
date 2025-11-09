@@ -18,6 +18,7 @@ A production-ready Expo boilerplate with feature-based architecture, TypeScript,
 - ✅ **Husky** - Git hooks
 - ✅ **Version Management** - Automated versioning with conventional commits
 - ✅ **Custom Icon System** - Path-based SVG icons with theme integration
+- ✅ **💰 100% FREE CI/CD** - Local EAS builds, GitHub Actions, saves $1,188-$3,588/year!
 
 ## 📁 Project Structure
 
@@ -146,6 +147,13 @@ yarn format             # Format with Prettier
 # Version Management
 yarn release            # Interactive release (bump version, generate changelog)
 yarn commit             # Interactive commit helper (conventional commits)
+
+# Build & Deploy (100% FREE Local Builds!)
+yarn build:local            # Build both platforms locally
+yarn build:local:android    # Build Android locally (recommended for testing)
+yarn build:local:ios        # Build iOS locally (Mac required)
+yarn build:local:staging    # Build staging Android
+yarn build:local:production # Build production both platforms
 ```
 
 ## 🏗️ Architecture
@@ -429,17 +437,24 @@ See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
 
 ## 📚 Documentation
 
-- [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - **Complete environment configuration guide** (GPG encryption, profile selector, react-native-keys)
-- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Detailed architecture docs
-- [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) - **Version management guide** (automated releases, conventional commits)
-- [src/features/README.md](./src/features/README.md) - Feature-based architecture guide
-- [assets/icons/README.md](./assets/icons/README.md) - Icon system guide
+### 💰 CI/CD (100% FREE!)
+- [docs/FREE_LOCAL_BUILDS.md](./docs/FREE_LOCAL_BUILDS.md) - **Complete FREE local builds guide** (save $1,188-$3,588/year!) ⭐
+- [FREE_CI_CD_SETUP.md](./FREE_CI_CD_SETUP.md) - **Quick setup summary** (5 minutes)
+- [docs/CI_CD_QUICKSTART.md](./docs/CI_CD_QUICKSTART.md) - Quick start checklist
+
+### 📖 General
+- [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - Environment configuration (GPG encryption, profile selector)
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Project architecture
+- [docs/VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) - Version management (automated releases)
+- [src/features/README.md](./src/features/README.md) - Feature-based architecture
+- [assets/icons/README.md](./assets/icons/README.md) - Icon system
 
 **Quick reference:**
 - Environment: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
 - Access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
 - Icons: `import { Home, Edit } from '@/assets/icons'`
 - Version: Managed in `package.json` (single source of truth)
+- CI/CD: **100% FREE** local EAS builds on GitHub Actions + GitHub Releases 💰
 
 ## 🔧 Configuration
 

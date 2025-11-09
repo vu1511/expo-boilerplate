@@ -36,7 +36,12 @@
     "prebuild:staging": "KEYSFILE=keys.staging.json expo prebuild --clean",
     "prebuild:production": "KEYSFILE=keys.production.json expo prebuild --clean",
     "release": "node scripts/release-interactive.js",
-    "commit": "cz"
+    "commit": "cz",
+    "build:local": "eas build --platform all --local",
+    "build:local:android": "eas build --platform android --local",
+    "build:local:ios": "eas build --platform ios --local",
+    "build:local:staging": "eas build --platform android --profile staging --local",
+    "build:local:production": "eas build --platform all --profile production --local"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
