@@ -2,11 +2,15 @@ import { ConfigContext, ExpoConfig } from 'expo/config'
 import * as fs from 'fs'
 import * as path from 'path'
 
+import packageJson from './package.json'
+
 /**
  * Expo App Configuration
  *
  * This configuration dynamically loads values from keys.*.json files
  * to support different environments (development, staging, production)
+ *
+ * Version is read from package.json (single source of truth)
  *
  * @see https://docs.expo.dev/workflow/configuration/
  * @see https://github.com/numandev1/react-native-keys
@@ -60,11 +64,21 @@ try {
   }
 }
 
+// Version from package.json (single source of truth)
+const version = packageJson.version
+
+// Build number strategy: Timestamp-based (always unique, always increments)
+// This ensures App Store & Play Store never reject due to duplicate build numbers
+const buildNumber = Math.floor(Date.now() / 1000).toString()
+
+console.log(`📱 App version: ${version}`)
+console.log(`🔢 Build number: ${buildNumber}`)
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: keys.public.APP_NAME,
   slug: keys.public.APP_SLUG,
-  version: keys.public.APP_VERSION,
+  version: version,
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: keys.public.APP_SCHEME,
@@ -73,6 +87,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: keys.public.IOS_BUNDLE_ID,
+    buildNumber: buildNumber,
   },
   android: {
     adaptiveIcon: {
@@ -81,6 +96,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
+    versionCode: parseInt(buildNumber, 10),
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: keys.public.ANDROID_PACKAGE,

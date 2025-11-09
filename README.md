@@ -16,6 +16,7 @@ A production-ready Expo boilerplate with feature-based architecture, TypeScript,
 - ✅ **ESLint + Prettier** - Code formatting
 - ✅ **Jest** - Testing setup
 - ✅ **Husky** - Git hooks
+- ✅ **Version Management** - Automated versioning with conventional commits
 - ✅ **Custom Icon System** - Path-based SVG icons with theme integration
 
 ## 📁 Project Structure
@@ -141,6 +142,10 @@ yarn test:coverage      # With coverage
 # Linting
 yarn lint               # Run ESLint
 yarn format             # Format with Prettier
+
+# Version Management
+yarn release            # Interactive release (bump version, generate changelog)
+yarn commit             # Interactive commit helper (conventional commits)
 ```
 
 ## 🏗️ Architecture
@@ -357,10 +362,76 @@ describe('useAuth', () => {
 })
 ```
 
+## 📦 Version Management
+
+This project uses **automated version management** with conventional commits:
+
+### Quick Release
+
+```bash
+# Interactive release menu
+yarn release
+
+# Choose from:
+# 1. Auto-detect (analyzes commits)
+# 2. Patch (bug fixes: 1.0.0 → 1.0.1)
+# 3. Minor (new features: 1.0.0 → 1.1.0)
+# 4. Major (breaking changes: 1.0.0 → 2.0.0)
+# 5. First Release (initial setup)
+# 6. Dry Run (preview changes)
+```
+
+### Conventional Commits
+
+All commits must follow the conventional format:
+
+```bash
+# Use interactive helper
+yarn commit
+
+# Or write manually
+git commit -m "feat(auth): add biometric login"
+git commit -m "fix(ui): resolve button alignment"
+```
+
+**Commit types:**
+- `feat:` → New feature (triggers MINOR bump)
+- `fix:` → Bug fix (triggers PATCH bump)
+- `feat!:` or `BREAKING CHANGE:` → Breaking change (triggers MAJOR bump)
+
+### Release Workflow
+
+```bash
+# 1. Make changes with conventional commits
+git commit -m "feat(auth): add OAuth login"
+
+# 2. Release (interactive menu)
+yarn release
+# ✅ Updates package.json version
+# ✅ Generates CHANGELOG.md
+# ✅ Creates git tag
+
+# 3. Push
+git push --follow-tags origin main
+
+# 4. Build (version automatically correct)
+yarn prebuild:production
+eas build --platform all
+```
+
+**Key Benefits:**
+- ✅ Single source of truth: `package.json` version
+- ✅ Automatic changelog generation
+- ✅ No manual version syncing
+- ✅ Build numbers auto-increment (timestamp-based)
+
+See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
+
 ## 📚 Documentation
 
 - [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - **Complete environment configuration guide** (GPG encryption, profile selector, react-native-keys)
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Detailed architecture docs
+- [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) - **Version management guide** (automated releases, conventional commits)
 - [src/features/README.md](./src/features/README.md) - Feature-based architecture guide
 - [assets/icons/README.md](./assets/icons/README.md) - Icon system guide
 
@@ -368,6 +439,7 @@ describe('useAuth', () => {
 - Environment: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
 - Access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
 - Icons: `import { Home, Edit } from '@/assets/icons'`
+- Version: Managed in `package.json` (single source of truth)
 
 ## 🔧 Configuration
 
@@ -387,6 +459,13 @@ Configured in `tsconfig.json`:
 ### ESLint + Prettier
 
 Code is automatically formatted on commit using Husky + lint-staged.
+
+### Version Management
+
+- **Single source of truth:** `package.json` version
+- **Automatic changelog:** Generated from conventional commits
+- **Commit validation:** Enforced via commitlint (Husky hook)
+- **Build numbers:** Auto-increment via timestamp in `app.config.ts`
 
 ## 🚢 Deployment
 

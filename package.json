@@ -34,7 +34,9 @@
     "prebuild:clean": "expo prebuild --clean",
     "prebuild:dev": "KEYSFILE=keys.development.json expo prebuild --clean",
     "prebuild:staging": "KEYSFILE=keys.staging.json expo prebuild --clean",
-    "prebuild:production": "KEYSFILE=keys.production.json expo prebuild --clean"
+    "prebuild:production": "KEYSFILE=keys.production.json expo prebuild --clean",
+    "release": "node scripts/release-interactive.js",
+    "commit": "cz"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -100,6 +102,8 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^30.0.0",
@@ -107,6 +111,8 @@
     "@types/react": "~19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -122,6 +128,7 @@
     "patch-package": "^8.0.1",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.6.2",
+    "standard-version": "^9.5.0",
     "typescript": "~5.9.2"
   },
   "private": true

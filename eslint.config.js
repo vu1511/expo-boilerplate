@@ -5,7 +5,7 @@ const expoConfig = require('eslint-config-expo/flat')
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', 'node_modules', 'scripts/*'],
     plugins: {
       prettier: require('eslint-plugin-prettier'),
       'simple-import-sort': require('eslint-plugin-simple-import-sort'),
