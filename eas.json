@@ -1,0 +1,75 @@
+{
+  "cli": {
+    "version": ">= 16.0.0"
+  },
+  "build": {
+    "base": {},
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug",
+        "distribution": "internal"
+      },
+      "env": {
+        "NODE_ENV": "development",
+        "KEYSFILE": "keys.development.json"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "distribution": "internal"
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "KEYSFILE": "keys.staging.json"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "KEYSFILE": "keys.production.json"
+      }
+    },
+    "preview": {
+      "extends": "base",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "KEYSFILE": "keys.staging.json"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal"
+      },
+      "ios": {
+        "ascAppId": "6755358620",
+        "appleTeamId": "GSJB6Q9K2J"
+      }
+    }
+  }
+}

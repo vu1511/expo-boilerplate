@@ -4,11 +4,15 @@
     "APP_SLUG": "expo-boilerplate",
     "APP_SCHEME": "expoboilerplate",
     "APP_ENV": "development",
-    "IOS_BUNDLE_ID": "com.yourcompany.yourapp",
-    "ANDROID_PACKAGE": "com.yourcompany.yourapp",
+    "IOS_BUNDLE_ID": "com.expoboilerplate.example",
+    "ANDROID_BUNDLE_ID": "com.expoboilerplate.example",
     "API_URL": "https://api.example.com",
     "ENABLE_ANALYTICS": "false",
-    "ENABLE_DEBUG": "true"
+    "ENABLE_DEBUG": "true",
+    "EAS_PROJECT_ID": "your-eas-project-id-here",
+    "FIREBASE_ANDROID_APP_ID": "1:123456789:android:abcdef123456",
+    "FIREBASE_IOS_APP_ID": "1:123456789:ios:abcdef123456",
+    "FIREBASE_GROUP": "testers"
   },
   "secure": {
     "API_KEY": "your-api-key-here",
@@ -17,4 +21,3 @@
     "JWT_SECRET": "your-jwt-secret-here"
   }
 }
-

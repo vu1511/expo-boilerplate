@@ -30,7 +30,7 @@ This project uses a secure, multi-environment configuration system with:
 
 - ✅ **react-native-keys**: Secure native variable storage with JNI encryption
 - ✅ **GPG Encryption**: AES256-encrypted environment files for team collaboration
-- ✅ **Interactive Profile Selector**: Easy environment switching with `yarn start` / `yarn prebuild`
+- ✅ **Interactive Profile Selector**: Easy environment switching with `yarn start` / `yarn android` / `yarn ios`
 - ✅ **Multiple Environments**: Development, staging, production (+ custom)
 - ✅ **Git-Friendly**: Encrypted files committed safely to repository
 - ✅ **Cross-Platform**: Works on macOS, Linux, Windows
@@ -51,7 +51,7 @@ This project uses a secure, multi-environment configuration system with:
 │   ├── keys.staging.json          (gitignored)             │
 │   └── keys.production.json       (gitignored)             │
 └────────────────────────┬──────────────────────────────────┘
-                         ↓ yarn start / yarn prebuild
+                         ↓ yarn start / yarn android / yarn ios
 ┌───────────────────────────────────────────────────────────┐
 │ Interactive Profile Selector                              │
 │  • Shows available environments                           │
@@ -83,7 +83,7 @@ cp keys.development.json keys.staging.json
 cp keys.development.json keys.production.json
 
 # 2. Edit files with actual values
-# Update: IOS_BUNDLE_ID, ANDROID_PACKAGE, API_URL, API_KEY, etc.
+# Update: IOS_BUNDLE_ID, ANDROID_BUNDLE_ID, API_URL, API_KEY, etc.
 
 # 3. Encrypt for team sharing
 yarn env:encrypt                    # Enter strong password
@@ -113,7 +113,6 @@ yarn start                          # Select profile → Dev server starts
 ```bash
 # Interactive (Recommended)
 yarn start                          # Select profile → start dev server
-yarn prebuild                       # Select profile → prebuild native
 yarn ios                            # Select profile → build & run iOS
 yarn android                        # Select profile → build & run Android
 
@@ -185,7 +184,7 @@ cp keys.development.json keys.production.json
     "APP_VERSION": "1.0.0",
     "APP_SCHEME": "expoboilerplate-dev",
     "IOS_BUNDLE_ID": "com.yourcompany.app.dev",
-    "ANDROID_PACKAGE": "com.yourcompany.app.dev",
+    "ANDROID_BUNDLE_ID": "com.yourcompany.app.dev",
     "API_URL": "https://dev-api.example.com",
     "APP_ENV": "development",
     "ENABLE_ANALYTICS": "false",
@@ -206,7 +205,7 @@ cp keys.development.json keys.production.json
     "APP_NAME": "Expo Boilerplate (Staging)",
     "APP_SLUG": "expo-boilerplate-staging",
     "IOS_BUNDLE_ID": "com.yourcompany.app.staging",
-    "ANDROID_PACKAGE": "com.yourcompany.app.staging",
+    "ANDROID_BUNDLE_ID": "com.yourcompany.app.staging",
     "API_URL": "https://staging-api.example.com",
     "APP_ENV": "staging"
     // ... other staging values
@@ -225,7 +224,7 @@ cp keys.development.json keys.production.json
     "APP_NAME": "Expo Boilerplate",
     "APP_SLUG": "expo-boilerplate",
     "IOS_BUNDLE_ID": "com.yourcompany.app",
-    "ANDROID_PACKAGE": "com.yourcompany.app",
+    "ANDROID_BUNDLE_ID": "com.yourcompany.app",
     "API_URL": "https://api.example.com",
     "APP_ENV": "production",
     "ENABLE_ANALYTICS": "true",
@@ -350,17 +349,15 @@ yarn android
 # Select profile (1-3) [default: 1]:
 ```
 
-**Prebuild Native:**
-```bash
-yarn prebuild
-# 🚀 Select Profile for: Prebuild
-# (Same interactive menu)
-```
+**Note:** Prebuild is handled automatically by:
+- `yarn build` - Includes prebuild before building
+- `yarn android` / `yarn ios` - Handles prebuild internally
+- Direct commands available for CI/CD: `yarn prebuild:dev`, `yarn prebuild:staging`, `yarn prebuild:production`
 
 Features:
 - ✅ Visual status indicators
 - 🔓 Auto-decrypt if needed (prompts for password)
-- 🚀 Smart defaults (auto-select if only one environment available - works for all commands: start, prebuild, ios, android)
+- 🚀 Smart defaults (auto-select if only one environment available - works for all commands: start, ios, android)
 - ⌨️ Press Enter for default
 
 **Example with Auto-Decrypt:**
@@ -386,21 +383,23 @@ Skip the interactive prompt when you know exactly which environment you need:
 ```bash
 # Development
 yarn start:dev
-yarn prebuild:dev
 yarn ios:dev
 yarn android:dev
 
 # Staging
 yarn start:staging
-yarn prebuild:staging
 yarn ios:staging
 yarn android:staging
 
 # Production
 yarn start:production
-yarn prebuild:production
 yarn ios:production
 yarn android:production
+
+# CI/CD Prebuild Commands (for automation only)
+yarn prebuild:dev          # Regenerate native code for development
+yarn prebuild:staging      # Regenerate native code for staging
+yarn prebuild:production   # Regenerate native code for production
 ```
 
 ### Manual KEYSFILE Override
@@ -409,7 +408,7 @@ Most flexible approach for custom environments or one-off commands:
 
 ```bash
 KEYSFILE=keys.staging.json yarn start
-KEYSFILE=keys.production.json yarn prebuild --clean
+KEYSFILE=keys.production.json yarn prebuild:production
 KEYSFILE=keys.qa.json expo run:ios
 KEYSFILE=keys.demo.json expo run:android
 ```
@@ -483,7 +482,7 @@ Environment files use a two-tier structure:
 | `public.APP_VERSION` | `keys.APP_VERSION` | `Keys.publicFor("APP_VERSION")` | Public | Expo + Stores | Version number |
 | `public.APP_SCHEME` | `keys.APP_SCHEME` | `Keys.publicFor("APP_SCHEME")` | Public | Expo config | Deep link scheme |
 | `public.IOS_BUNDLE_ID` | `keys.IOS_BUNDLE_ID` | `Keys.publicFor("IOS_BUNDLE_ID")` | Public | Xcode | iOS bundle identifier |
-| `public.ANDROID_PACKAGE` | `keys.ANDROID_PACKAGE` | `Keys.publicFor("ANDROID_PACKAGE")` | Public | Gradle | Android package name |
+| `public.ANDROID_BUNDLE_ID` | `keys.ANDROID_BUNDLE_ID` | `Keys.publicFor("ANDROID_BUNDLE_ID")` | Public | Gradle | Android bundle identifier |
 | `public.API_URL` | `keys.API_URL` | `Keys.publicFor("API_URL")` | Public | Your code | API base URL |
 | `public.APP_ENV` | `keys.APP_ENV` | `Keys.publicFor("APP_ENV")` | Public | Your code | Environment name |
 | `public.ENABLE_ANALYTICS` | `keys.ENABLE_ANALYTICS` | `Keys.publicFor("ENABLE_ANALYTICS")` | Public | Your code | Enable analytics |
@@ -520,10 +519,14 @@ export const env = {
 }
 ```
 
-**4. Rebuild native code:**
+**4. Rebuild native code (if needed for CI/CD):**
 
 ```bash
-yarn prebuild:clean
+# For local development, use yarn build (includes prebuild)
+yarn build
+
+# For CI/CD only
+yarn prebuild:dev          # or prebuild:staging / prebuild:production
 ```
 
 **5. Use in code:**
@@ -548,7 +551,7 @@ import { env } from '@/config/env'
 env.appName           // "Expo Boilerplate"
 env.appVersion        // "1.0.0"
 env.iosBundleId       // "com.yourcompany.app"
-env.androidPackage    // "com.yourcompany.app"
+env.androidBundleId    // "com.yourcompany.app"
 
 // API Configuration
 env.apiUrl            // "https://api.example.com"
@@ -683,7 +686,7 @@ export default (): ExpoConfig => ({
   },
   
   android: {
-    package: keys.public.ANDROID_PACKAGE || defaultKeys.public.ANDROID_PACKAGE,
+    package: keys.public.ANDROID_BUNDLE_ID || defaultKeys.public.ANDROID_BUNDLE_ID,
   },
   
   plugins: [
@@ -731,10 +734,14 @@ Bundle ID, Version, etc.
 }
 ```
 
-**Run prebuild:**
+**Rebuild native code:**
 
 ```bash
-yarn prebuild:clean
+# For local development (recommended)
+yarn build
+
+# For CI/CD only
+yarn prebuild:production
 ```
 
 **Version is now synced to:**
@@ -745,17 +752,21 @@ yarn prebuild:clean
 
 ### Environment Switching
 
-When switching environments, **always run prebuild** because:
-1. `app.config.ts` needs to regenerate native files with new bundle IDs
-2. `react-native-keys` needs to compile new keys into native code
+When switching environments, native code is automatically regenerated:
+1. `yarn build` includes prebuild automatically
+2. `yarn android` / `yarn ios` handle prebuild internally
+3. `app.config.ts` regenerates native files with correct bundle IDs
+4. `react-native-keys` compiles new keys into native code
 
 ```bash
-# Wrong (missing prebuild)
-KEYSFILE=keys.staging.json yarn ios  # ❌ Still uses old config
+# Recommended (automatic prebuild)
+yarn android  # Select staging profile → prebuild + build automatically
+yarn ios      # Select staging profile → prebuild + build automatically
+yarn build    # Select staging profile → prebuild + build automatically
 
-# Correct
-KEYSFILE=keys.staging.json yarn prebuild:clean
-KEYSFILE=keys.staging.json yarn ios  # ✅ Uses staging config
+# CI/CD (explicit prebuild)
+yarn prebuild:staging
+yarn ios:staging
 ```
 
 ---
@@ -983,7 +994,9 @@ eas build --profile production
 
 ```bash
 rm -rf ios android .expo
-yarn prebuild:clean
+yarn build  # Includes prebuild automatically
+# or for specific profile
+yarn prebuild:dev  # CI/CD only
 yarn ios  # or yarn android
 ```
 
@@ -996,7 +1009,7 @@ yarn ios  # or yarn android
 ```bash
 # Kill Metro bundler (Ctrl+C)
 rm -rf ios android .expo
-yarn prebuild:clean
+yarn build  # Includes prebuild automatically
 yarn start
 ```
 
@@ -1067,7 +1080,9 @@ yarn env              # Decrypt from encrypted files
 
 ```bash
 rm -rf ios android .expo
-yarn prebuild:clean
+yarn build  # Includes prebuild automatically
+# or for CI/CD
+yarn prebuild:production
 ```
 
 ### TypeScript Errors
@@ -1163,7 +1178,8 @@ export function App() {
 
 ```bash
 yarn start        # Quick profile switching
-yarn prebuild     # Easy environment testing
+yarn android      # Easy environment testing (includes prebuild)
+yarn ios          # Easy environment testing (includes prebuild)
 ```
 
 **2. Use Direct Commands for Repetitive Tasks:**
@@ -1278,9 +1294,8 @@ Put sensitive data in `secure` section for JNI protection:
 | Command | Description |
 |---------|-------------|
 | `yarn start` | **Interactive profile selection** → start dev server |
-| `yarn prebuild` | **Interactive profile selection** → prebuild native |
-| `yarn ios` | **Interactive profile selection** → build & run iOS |
-| `yarn android` | **Interactive profile selection** → build & run Android |
+| `yarn ios` | **Interactive profile selection** → build & run iOS (includes prebuild) |
+| `yarn android` | **Interactive profile selection** → build & run Android (includes prebuild) |
 
 ### Development (Direct - Skip Profile Selection)
 
@@ -1289,9 +1304,6 @@ Put sensitive data in `secure` section for JNI protection:
 | `yarn start:dev` | Start with development profile |
 | `yarn start:staging` | Start with staging profile |
 | `yarn start:production` | Start with production profile |
-| `yarn prebuild:dev` | Prebuild with development profile |
-| `yarn prebuild:staging` | Prebuild with staging profile |
-| `yarn prebuild:production` | Prebuild with production profile |
 | `yarn ios:dev` | Build & run iOS with development |
 | `yarn ios:staging` | Build & run iOS with staging |
 | `yarn ios:production` | Build & run iOS with production |
@@ -1299,11 +1311,20 @@ Put sensitive data in `secure` section for JNI protection:
 | `yarn android:staging` | Build & run Android with staging |
 | `yarn android:production` | Build & run Android with production |
 
-### Other Build Commands
+### CI/CD Prebuild Commands
 
 | Command | Description |
 |---------|-------------|
-| `yarn prebuild:clean` | Clean rebuild of native folders |
+| `yarn prebuild:dev` | Regenerate native code for development (CI/CD only) |
+| `yarn prebuild:staging` | Regenerate native code for staging (CI/CD only) |
+| `yarn prebuild:production` | Regenerate native code for production (CI/CD only) |
+
+**Note:** For local development, use `yarn build` which includes prebuild automatically.
+
+### Other Commands
+
+| Command | Description |
+|---------|-------------|
 | `yarn web` | Run on web (no profile selection needed) |
 
 ### Manual Override
@@ -1311,7 +1332,7 @@ Put sensitive data in `secure` section for JNI protection:
 | Command | Description |
 |---------|-------------|
 | `KEYSFILE=keys.staging.json yarn start` | Override with specific keys file |
-| `KEYSFILE=keys.production.json yarn prebuild` | Prebuild with specific keys file |
+| `KEYSFILE=keys.production.json yarn prebuild:production` | Prebuild with specific keys file (CI/CD) |
 
 ### Verification
 

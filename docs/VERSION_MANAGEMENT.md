@@ -188,7 +188,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       versionCode: parseInt(buildNumber, 10),
-      package: keys.public.ANDROID_PACKAGE,
+      package: keys.public.ANDROID_BUNDLE_ID,
     },
     // ... rest of config
   }
@@ -293,7 +293,8 @@ eas build --platform all --profile production
 - [ ] Push with `git push --follow-tags`
 
 ### Build
-- [ ] Run `yarn prebuild:production`
+- [ ] Run `yarn build:deploy` (includes prebuild automatically)
+- [ ] Or for CI/CD: `yarn prebuild:production`
 - [ ] Build iOS: `eas build --platform ios`
 - [ ] Build Android: `eas build --platform android`
 - [ ] Test on real devices
@@ -384,9 +385,10 @@ feat/add login
 ```
 
 ### "Version not updating in app"
-1. Rebuild native: `yarn prebuild:production --clean`
-2. Clear cache: `yarn start -c`
-3. Check `app.config.ts` reads from `package.json` (single source of truth)
+1. Rebuild native: `yarn build` (includes prebuild automatically)
+2. Or for CI/CD: `yarn prebuild:production`
+3. Clear cache: `yarn start -c`
+4. Check `app.config.ts` reads from `package.json` (single source of truth)
 
 ### "Build number conflict on App Store"
 Ensure using timestamp strategy in `app.config.ts`:

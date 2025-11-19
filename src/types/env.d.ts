@@ -3,14 +3,17 @@ declare module 'react-native-keys' {
     // PUBLIC KEYS - Regular variables
     APP_NAME: string
     APP_SLUG: string
-    APP_VERSION: string
     APP_SCHEME: string
     IOS_BUNDLE_ID: string
-    ANDROID_PACKAGE: string
+    ANDROID_BUNDLE_ID: string
     API_URL: string
     APP_ENV: string
     ENABLE_ANALYTICS: string
     ENABLE_DEBUG: string
+    EAS_PROJECT_ID: string
+    FIREBASE_ANDROID_APP_ID: string
+    FIREBASE_IOS_APP_ID: string
+    FIREBASE_GROUP: string
 
     // SECURE KEYS - JNI encrypted (harder to extract)
     // Use for: API keys, secrets, tokens, passwords

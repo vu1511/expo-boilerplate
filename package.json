@@ -30,13 +30,15 @@
     "env:status": "node scripts/env-manager.js status",
     "env:setup": "cp keys.example.json keys.development.json",
     "env:verify": "node scripts/verify-env.js",
-    "prebuild": "node scripts/profile-selector.js prebuild --clean",
-    "prebuild:clean": "expo prebuild --clean",
-    "prebuild:dev": "KEYSFILE=keys.development.json expo prebuild --clean",
-    "prebuild:staging": "KEYSFILE=keys.staging.json expo prebuild --clean",
-    "prebuild:production": "KEYSFILE=keys.production.json expo prebuild --clean",
+    "prebuild:dev": "CI=1 KEYSFILE=keys.development.json expo prebuild --clean",
+    "prebuild:staging": "CI=1 KEYSFILE=keys.staging.json expo prebuild --clean",
+    "prebuild:production": "CI=1 KEYSFILE=keys.production.json expo prebuild --clean",
     "release": "node scripts/release-interactive.js",
-    "commit": "cz"
+    "commit": "cz",
+    "build": "node scripts/build-local.js --no-deploy",
+    "build:deploy": "node scripts/build-local.js",
+    "build:setup": "node scripts/setup-local-build.js",
+    "deploy": "node scripts/deploy.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -64,6 +66,7 @@
     "expo": "~54.0.12",
     "expo-build-properties": "~1.0.9",
     "expo-constants": "~18.0.9",
+    "expo-dev-client": "^6.0.17",
     "expo-font": "~14.0.8",
     "expo-haptics": "~15.0.7",
     "expo-image": "~3.0.8",

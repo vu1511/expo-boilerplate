@@ -1,0 +1,11 @@
+# .easignore
+# Files to exclude from EAS builds
+# (EAS respects .gitignore by default, this overrides it)
+
+# Include keys files in EAS builds (even though they're in .gitignore)
+# EAS needs these to configure the app during build
+!keys.development.json
+!keys.staging.json
+!keys.production.json
+!keys.example.json
+

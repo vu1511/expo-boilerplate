@@ -50,3 +50,11 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Build artifacts
+build-output/
+*.apk
+*.aab
+*.ipa
+
+actions-runner

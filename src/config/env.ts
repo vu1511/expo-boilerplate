@@ -26,14 +26,13 @@ export const env = {
   // ============================================
   // PUBLIC KEYS - App Configuration
   // ============================================
-  appName: keys.APP_NAME || 'Expo Boilerplate',
-  appSlug: keys.APP_SLUG || 'expo-boilerplate',
-  appVersion: keys.APP_VERSION || '1.0.0',
-  appScheme: keys.APP_SCHEME || 'expoboilerplate',
-  iosBundleId: keys.IOS_BUNDLE_ID || 'com.nduyvu1511.expoboilerplate',
-  androidPackage: keys.ANDROID_PACKAGE || 'com.nduyvu1511.expoboilerplate',
-  apiUrl: keys.API_URL || '',
-  appEnv: keys.APP_ENV || 'development',
+  appName: keys.APP_NAME,
+  appSlug: keys.APP_SLUG,
+  appScheme: keys.APP_SCHEME,
+  iosBundleId: keys.IOS_BUNDLE_ID,
+  androidBundleId: keys.ANDROID_BUNDLE_ID,
+  apiUrl: keys.API_URL,
+  appEnv: keys.APP_ENV,
   enableAnalytics: keys.ENABLE_ANALYTICS === 'true',
   enableDebug: keys.ENABLE_DEBUG === 'true',
 
@@ -59,9 +58,8 @@ const requiredVars = [
   // Public keys
   'APP_NAME',
   'APP_SLUG',
-  'APP_VERSION',
   'IOS_BUNDLE_ID',
-  'ANDROID_PACKAGE',
+  'ANDROID_BUNDLE_ID',
   'API_URL',
   // Secure keys
   'API_KEY',
@@ -71,7 +69,7 @@ export const validateEnv = () => {
   const missing: string[] = []
 
   for (const key of requiredVars) {
-    if (!keys[key]) {
+    if (!keys[key as keyof typeof keys]) {
       missing.push(key)
     }
   }
