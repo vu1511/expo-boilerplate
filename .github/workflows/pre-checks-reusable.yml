@@ -1,4 +1,4 @@
-name: CI - Lint, Format & Test
+name: Reusable Lint, Format & Test Workflow
 
 on:
   workflow_call:
