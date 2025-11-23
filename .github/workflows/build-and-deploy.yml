@@ -39,10 +39,6 @@ jobs:
   # Pre-checks
   pre-checks:
     name: Pre-checks (Lint, Format, Test)
-    if: |
-      inputs.workflow-type != 'deploy-android' &&
-      inputs.workflow-type != 'deploy-ios' &&
-      inputs.workflow-type != 'deploy-both'
     uses: ./.github/workflows/pre-checks-reusable.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -52,11 +48,10 @@ jobs:
     name: Build Android
     needs: pre-checks
     if: |
-      (inputs.workflow-type == 'build-android' || 
-       inputs.workflow-type == 'build-both' || 
-       inputs.workflow-type == 'build-deploy-android' || 
-       inputs.workflow-type == 'build-deploy-both') &&
-      (needs.pre-checks.result == 'success')
+      inputs.workflow-type == 'build-android' || 
+      inputs.workflow-type == 'build-both' || 
+      inputs.workflow-type == 'build-deploy-android' || 
+      inputs.workflow-type == 'build-deploy-both'
     uses: ./.github/workflows/build-reusable.yml
     with:
       platform: 'android'
@@ -64,18 +59,17 @@ jobs:
       use-local-runner: ${{ inputs.use-local-runner }}
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', inputs.profile == 'development' && 'DEVELOPMENT' || inputs.profile == 'staging' && 'STAGING' || 'PRODUCTION')] }}
 
   # Build iOS
   build-ios:
     name: Build iOS
     needs: pre-checks
     if: |
-      (inputs.workflow-type == 'build-ios' || 
-       inputs.workflow-type == 'build-both' || 
-       inputs.workflow-type == 'build-deploy-ios' || 
-       inputs.workflow-type == 'build-deploy-both') &&
-      (needs.pre-checks.result == 'success')
+      inputs.workflow-type == 'build-ios' || 
+      inputs.workflow-type == 'build-both' || 
+      inputs.workflow-type == 'build-deploy-ios' || 
+      inputs.workflow-type == 'build-deploy-both'
     uses: ./.github/workflows/build-reusable.yml
     with:
       platform: 'ios'
@@ -83,21 +77,19 @@ jobs:
       use-local-runner: ${{ inputs.use-local-runner }}
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', inputs.profile == 'development' && 'DEVELOPMENT' || inputs.profile == 'staging' && 'STAGING' || 'PRODUCTION')] }}
 
   # Deploy Android
   deploy-android:
     name: Deploy Android
-    needs: [build-android]
+    needs: [pre-checks, build-android]
     if: |
-      always() &&
+      always() && 
+      (needs.build-android.result == 'success' || inputs.workflow-type == 'deploy-android') &&
       (inputs.workflow-type == 'build-deploy-android' || 
        inputs.workflow-type == 'build-deploy-both' || 
        inputs.workflow-type == 'deploy-android' || 
-       inputs.workflow-type == 'deploy-both') &&
-      (inputs.workflow-type == 'deploy-android' || 
-       inputs.workflow-type == 'deploy-both' || 
-       needs.build-android.result == 'success')
+       inputs.workflow-type == 'deploy-both')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'android'
@@ -106,22 +98,20 @@ jobs:
       artifact-android: ${{ needs.build-android.result == 'success' && format('android-{0}-{1}', inputs.profile, github.run_number) || '' }}
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', inputs.profile == 'development' && 'DEVELOPMENT' || inputs.profile == 'staging' && 'STAGING' || 'PRODUCTION')] }}
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
   # Deploy iOS
   deploy-ios:
     name: Deploy iOS
-    needs: [build-ios]
+    needs: [pre-checks, build-ios]
     if: |
-      always() &&
+      always() && 
+      (needs.build-ios.result == 'success' || inputs.workflow-type == 'deploy-ios') &&
       (inputs.workflow-type == 'build-deploy-ios' || 
        inputs.workflow-type == 'build-deploy-both' || 
        inputs.workflow-type == 'deploy-ios' || 
-       inputs.workflow-type == 'deploy-both') &&
-      (inputs.workflow-type == 'deploy-ios' || 
-       inputs.workflow-type == 'deploy-both' || 
-       needs.build-ios.result == 'success')
+       inputs.workflow-type == 'deploy-both')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'ios'
@@ -130,13 +120,13 @@ jobs:
       artifact-ios: ${{ needs.build-ios.result == 'success' && format('ios-{0}-{1}', inputs.profile, github.run_number) || '' }}
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', inputs.profile == 'development' && 'DEVELOPMENT' || inputs.profile == 'staging' && 'STAGING' || 'PRODUCTION')] }}
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
   # Summary
   summary:
     name: Workflow Summary
-    needs: [build-android, build-ios, deploy-android, deploy-ios]
+    needs: [pre-checks, build-android, build-ios, deploy-android, deploy-ios]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -150,6 +140,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Job Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Pre-checks: ${{ needs.pre-checks.result }}" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ inputs.workflow-type }}" == *"android"* ]] || [[ "${{ inputs.workflow-type }}" == *"both"* ]]; then
             echo "- Build Android: ${{ needs.build-android.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
