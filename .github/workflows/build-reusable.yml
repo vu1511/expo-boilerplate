@@ -144,8 +144,11 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           KEYSFILE: keys.${{ inputs.profile }}.json
+          NODE_OPTIONS: --openssl-legacy-provider --max_old_space_size=4096
         run: |
           echo "Building locally on ${{ runner.os }} runner..."
+          # Build with increased memory limit
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
 
           if [ "${{ inputs.platform }}" = "all" ]; then
             eas build --platform android --profile ${{ inputs.profile }} --local --non-interactive &
