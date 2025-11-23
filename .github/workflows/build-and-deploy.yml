@@ -52,10 +52,12 @@ jobs:
     name: Build Android
     needs: pre-checks
     if: |
-      inputs.workflow-type == 'build-android' || 
-      inputs.workflow-type == 'build-both' || 
-      inputs.workflow-type == 'build-deploy-android' || 
-      inputs.workflow-type == 'build-deploy-both'
+      always() &&
+      (inputs.workflow-type == 'build-android' || 
+       inputs.workflow-type == 'build-both' || 
+       inputs.workflow-type == 'build-deploy-android' || 
+       inputs.workflow-type == 'build-deploy-both') &&
+      (needs.pre-checks.result == 'success' || needs.pre-checks.result == 'skipped')
     uses: ./.github/workflows/build-reusable.yml
     with:
       platform: 'android'
@@ -70,10 +72,12 @@ jobs:
     name: Build iOS
     needs: pre-checks
     if: |
-      inputs.workflow-type == 'build-ios' || 
-      inputs.workflow-type == 'build-both' || 
-      inputs.workflow-type == 'build-deploy-ios' || 
-      inputs.workflow-type == 'build-deploy-both'
+      always() &&
+      (inputs.workflow-type == 'build-ios' || 
+       inputs.workflow-type == 'build-both' || 
+       inputs.workflow-type == 'build-deploy-ios' || 
+       inputs.workflow-type == 'build-deploy-both') &&
+      (needs.pre-checks.result == 'success' || needs.pre-checks.result == 'skipped')
     uses: ./.github/workflows/build-reusable.yml
     with:
       platform: 'ios'
