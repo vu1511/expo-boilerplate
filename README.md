@@ -61,6 +61,7 @@ npm install
 ### 2. Setup environment variables
 
 **For new projects (first time):**
+
 ```bash
 # Create development keys file
 yarn env:setup
@@ -71,6 +72,7 @@ yarn env:encrypt
 ```
 
 **For team members (joining existing project):**
+
 ```bash
 # Interactive environment selector
 yarn env
@@ -96,6 +98,7 @@ yarn start
 The app will prompt you to select an environment profile. Just press Enter for development or choose another profile.
 
 Then press:
+
 - `i` for iOS simulator
 - `a` for Android emulator
 - `w` for web
@@ -177,6 +180,7 @@ A feature is a self-contained module organized by business domain:
 ### Creating a New Feature
 
 1. **Create the structure:**
+
 ```bash
 mkdir -p src/features/my-feature/{components,hooks,store,types}
 ```
@@ -184,6 +188,7 @@ mkdir -p src/features/my-feature/{components,hooks,store,types}
 2. **Add your code** in the appropriate folders
 
 3. **Export public API:**
+
 ```typescript
 // src/features/my-feature/index.ts
 export { useMyFeature } from './hooks/useMyFeature'
@@ -191,6 +196,7 @@ export type { MyType } from './types'
 ```
 
 4. **Use in routes:**
+
 ```typescript
 import { useMyFeature } from '@/features/my-feature'
 ```
@@ -202,21 +208,30 @@ See [src/features/README.md](./src/features/README.md) for more details.
 The project includes a complete auth feature:
 
 ### Store (Zustand)
+
 ```typescript
 // src/features/auth/store/authStore.ts
 export const useAuthStore = create(
-  persist((set) => ({
-    user: null,
-    login: async (credentials) => { /* ... */ },
-    logout: async () => { /* ... */ },
-  }), {
-    name: 'auth-storage',
-    storage: createJSONStorage(() => storage),
-  })
+  persist(
+    (set) => ({
+      user: null,
+      login: async (credentials) => {
+        /* ... */
+      },
+      logout: async () => {
+        /* ... */
+      },
+    }),
+    {
+      name: 'auth-storage',
+      storage: createJSONStorage(() => storage),
+    },
+  ),
 )
 ```
 
 ### Hook
+
 ```typescript
 // src/features/auth/hooks/useAuth.ts
 export function useAuth() {
@@ -230,6 +245,7 @@ export function useAuth() {
 ```
 
 ### Usage in Route
+
 ```typescript
 // src/app/(auth)/login.tsx
 import { LoginForm, useAuth } from '@/features/auth'
@@ -249,7 +265,7 @@ import { useTranslation } from '@/hooks/useTranslation'
 
 function MyComponent() {
   const { t, changeLanguage } = useTranslation()
-  
+
   return (
     <>
       <Text>{t('auth.login.title')}</Text>
@@ -260,12 +276,14 @@ function MyComponent() {
 ```
 
 Add translations in `src/locales/`:
+
 - `en.json` - English
 - `vi.json` - Vietnamese
 
 ## 🎨 Theming & Icons
 
 ### Theming
+
 Components automatically adapt to dark/light mode:
 
 ```typescript
@@ -282,6 +300,7 @@ function MyScreen() {
 ```
 
 ### Icon System
+
 Custom path-based SVG icon system with theme integration:
 
 ```typescript
@@ -295,12 +314,13 @@ import { Home, Edit, ChevronDown } from '@/assets/icons'
 **Available icons:** Home, Explore, Edit, Delete, Plus, Search, Close, Settings, ChevronDown/Up/Left/Right, CheckCircle, AlertCircle
 
 **Creating new icons:**
+
 ```typescript
 // assets/icons/my-icon.tsx
 import { createSinglePathSVG } from '@/lib/icons'
 
 export const MyIcon = createSinglePathSVG({
-  path: 'M12 2L2 7v10l10 5 10-5V7L12 2z'
+  path: 'M12 2L2 7v10l10 5 10-5V7L12 2z',
 })
 
 // Export from index.ts
@@ -312,12 +332,14 @@ export * from './my-icon'
 We use **Zustand** for state management:
 
 ### Why Zustand?
+
 - Lightweight (< 1kb)
 - No boilerplate
 - TypeScript-first
 - Built-in persistence (using MMKV)
 
 ### Example Store
+
 ```typescript
 import { create } from 'zustand'
 
@@ -328,18 +350,21 @@ export const useMyStore = create((set) => ({
 ```
 
 ### With Persistence
+
 ```typescript
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { storage } from '@/features/auth/store/storage'
 
 export const useMyStore = create(
   persist(
-    (set) => ({ /* state */ }),
+    (set) => ({
+      /* state */
+    }),
     {
       name: 'my-store',
       storage: createJSONStorage(() => storage),
-    }
-  )
+    },
+  ),
 )
 ```
 
@@ -357,6 +382,7 @@ yarn test:coverage
 ```
 
 Example test:
+
 ```typescript
 import { renderHook } from '@testing-library/react-hooks'
 import { useAuth } from '@/features/auth'
@@ -403,6 +429,7 @@ git commit -m "fix(ui): resolve button alignment"
 ```
 
 **Commit types:**
+
 - `feat:` → New feature (triggers MINOR bump)
 - `fix:` → Bug fix (triggers PATCH bump)
 - `feat!:` or `BREAKING CHANGE:` → Breaking change (triggers MAJOR bump)
@@ -428,6 +455,7 @@ eas build --platform all
 ```
 
 **Key Benefits:**
+
 - ✅ Single source of truth: `package.json` version
 - ✅ Automatic changelog generation
 - ✅ No manual version syncing
@@ -438,6 +466,7 @@ See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
 ## 📚 Documentation
 
 ### 💰 Local Builds (100% FREE!) ⭐ NEW!
+
 - [docs/BUILD_DEPLOY_WORKFLOWS.md](./docs/BUILD_DEPLOY_WORKFLOWS.md) - **Build & Deploy Workflows** (separated processes, examples)
 - [docs/LOCAL_BUILD_GUIDE.md](./docs/LOCAL_BUILD_GUIDE.md) - **Complete local builds guide** (setup, build, troubleshoot)
 - [docs/FIREBASE_DISTRIBUTION.md](./docs/FIREBASE_DISTRIBUTION.md) - **Firebase App Distribution** (automated tester distribution)
@@ -445,6 +474,7 @@ See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
 - [docs/CI_CD_QUICKSTART.md](./docs/CI_CD_QUICKSTART.md) - Quick start checklist
 
 ### 📖 General
+
 - [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) - Environment configuration (GPG encryption, profile selector)
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Project architecture
 - [docs/VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) - Version management (automated releases)
@@ -452,6 +482,7 @@ See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
 - [assets/icons/README.md](./assets/icons/README.md) - Icon system
 
 **Quick reference:**
+
 - Environment: `{ "public": { "APP_NAME": "..." }, "secure": { "API_KEY": "..." } }`
 - Access: `keys.APP_NAME`, `keys.API_KEY` (flat, no nesting)
 - Icons: `import { Home, Edit } from '@/assets/icons'`
@@ -463,6 +494,7 @@ See [VERSION_MANAGEMENT.md](./docs/VERSION_MANAGEMENT.md) for complete guide.
 ### TypeScript Paths
 
 Configured in `tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -510,6 +542,7 @@ yarn deploy
 ```
 
 **Interactive features:**
+
 - Platform selection (Android, iOS, Both)
 - Profile selection (Development, Staging, Production)
 - Build summaries and progress

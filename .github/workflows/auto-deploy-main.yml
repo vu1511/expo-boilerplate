@@ -1,0 +1,127 @@
+# # Auto deploy with staging profile
+# name: Auto Deploy
+
+# on:
+#   push:
+#     branches: [main, master]
+#     paths-ignore:
+#       - '**.md'
+#       - 'docs/**'
+#       - '.github/**'
+#       - '!.github/workflows/**'
+
+# jobs:
+#   pre-checks:
+#     name: Pre-checks (Lint, Format, Test)
+#     uses: ./.github/workflows/pre-checks-reusable.yml
+#     secrets:
+#       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+#   build-android:
+#     name: Build Android (Staging)
+#     needs: pre-checks
+#     uses: ./.github/workflows/build-reusable.yml
+#     with:
+#       platform: 'android'
+#       profile: 'staging'
+#       use-local-runner: false
+#     secrets:
+#       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#       KEYS_FILE_CONTENT: ${{ secrets.KEYS_FILE_STAGING }}
+
+#   build-ios:
+#     name: Build iOS (Staging)
+#     needs: pre-checks
+#     uses: ./.github/workflows/build-reusable.yml
+#     with:
+#       platform: 'ios'
+#       profile: 'staging'
+#       use-local-runner: false
+#     secrets:
+#       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#       KEYS_FILE_CONTENT: ${{ secrets.KEYS_FILE_STAGING }}
+
+#   deploy-android:
+#     name: Deploy Android (Staging)
+#     needs: [build-android]
+#     if: needs.build-android.result == 'success'
+#     uses: ./.github/workflows/deploy-reusable.yml
+#     with:
+#       platform: 'android'
+#       profile: 'staging'
+#       release-notes: 'Auto-deployment from main branch - Build #${{ github.run_number }}'
+#       artifact-android: 'android-staging-${{ github.run_number }}'
+#     secrets:
+#       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#       KEYS_FILE_CONTENT: ${{ secrets.KEYS_FILE_STAGING }}
+#       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+#   deploy-ios:
+#     name: Deploy iOS (Staging)
+#     needs: [build-ios]
+#     if: needs.build-ios.result == 'success'
+#     uses: ./.github/workflows/deploy-reusable.yml
+#     with:
+#       platform: 'ios'
+#       profile: 'staging'
+#       release-notes: 'Auto-deployment from main branch - Build #${{ github.run_number }}'
+#       artifact-ios: 'ios-staging-${{ github.run_number }}'
+#     secrets:
+#       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#       KEYS_FILE_CONTENT: ${{ secrets.KEYS_FILE_STAGING }}
+#       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+#   notify-success:
+#     name: Send Success Notification
+#     needs: [deploy-android, deploy-ios]
+#     if: |
+#       always() && 
+#       (needs.deploy-android.result == 'success' || needs.deploy-ios.result == 'success')
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: 📢 Build Summary
+#         run: |
+#           echo "# 🚀 Auto-Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "**Branch**: main" >> $GITHUB_STEP_SUMMARY
+#           echo "**Profile**: staging" >> $GITHUB_STEP_SUMMARY
+#           echo "**Build Number**: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+#           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "## Deployment Status" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "- Android: ${{ needs.deploy-android.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "- iOS: ${{ needs.deploy-ios.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "🔗 **View in Firebase**: [App Distribution Console](https://console.firebase.google.com/project/_/appdistribution)" >> $GITHUB_STEP_SUMMARY
+
+#   notify-failure:
+#     name: Send Failure Notification
+#     needs: [pre-checks, build-android, build-ios, deploy-android, deploy-ios]
+#     if: |
+#       always() && 
+#       (needs.pre-checks.result == 'failure' || 
+#        needs.build-android.result == 'failure' || 
+#        needs.build-ios.result == 'failure' ||
+#        needs.deploy-android.result == 'failure' || 
+#        needs.deploy-ios.result == 'failure')
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: 📢 Failure Summary
+#         run: |
+#           echo "# ⚠️  Auto-Deployment Failed!" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "**Branch**: main" >> $GITHUB_STEP_SUMMARY
+#           echo "**Profile**: staging" >> $GITHUB_STEP_SUMMARY
+#           echo "**Build Number**: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+#           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "## Job Status" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "- Pre-checks: ${{ needs.pre-checks.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "- Build Android: ${{ needs.build-android.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "- Build iOS: ${{ needs.build-ios.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "- Deploy Android: ${{ needs.deploy-android.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "- Deploy iOS: ${{ needs.deploy-ios.result }}" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY

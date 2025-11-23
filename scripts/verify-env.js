@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-undef */
 
 /**
  * Script to verify react-native-keys setup

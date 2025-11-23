@@ -143,6 +143,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    './expo-plugins/withGradleCache',
   ],
   experiments: {
     typedRoutes: true,

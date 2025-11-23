@@ -1,0 +1,159 @@
+name: Build & Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow-type:
+        description: 'Workflow type'
+        required: true
+        type: choice
+        options:
+          - 'build-android'
+          - 'build-ios'
+          - 'build-both'
+          - 'build-deploy-android'
+          - 'build-deploy-ios'
+          - 'build-deploy-both'
+          - 'deploy-android'
+          - 'deploy-ios'
+          - 'deploy-both'
+      profile:
+        description: 'Build profile'
+        required: true
+        type: choice
+        options:
+          - 'development'
+          - 'staging'
+          - 'production'
+      release-notes:
+        description: 'Release notes (optional, for deploy workflows)'
+        required: false
+        type: string
+      use-local-runner:
+        description: 'Use self-hosted runner (fallback option)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # Pre-checks
+  pre-checks:
+    name: Pre-checks (Lint, Format, Test)
+    if: |
+      inputs.workflow-type != 'deploy-android' &&
+      inputs.workflow-type != 'deploy-ios' &&
+      inputs.workflow-type != 'deploy-both'
+    uses: ./.github/workflows/pre-checks-reusable.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Build Android
+  build-android:
+    name: Build Android
+    needs: pre-checks
+    if: |
+      inputs.workflow-type == 'build-android' || 
+      inputs.workflow-type == 'build-both' || 
+      inputs.workflow-type == 'build-deploy-android' || 
+      inputs.workflow-type == 'build-deploy-both'
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      platform: 'android'
+      profile: ${{ inputs.profile }}
+      use-local-runner: ${{ inputs.use-local-runner }}
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+
+  # Build iOS
+  build-ios:
+    name: Build iOS
+    needs: pre-checks
+    if: |
+      inputs.workflow-type == 'build-ios' || 
+      inputs.workflow-type == 'build-both' || 
+      inputs.workflow-type == 'build-deploy-ios' || 
+      inputs.workflow-type == 'build-deploy-both'
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      platform: 'ios'
+      profile: ${{ inputs.profile }}
+      use-local-runner: ${{ inputs.use-local-runner }}
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+
+  # Deploy Android
+  deploy-android:
+    name: Deploy Android
+    needs: [pre-checks, build-android]
+    if: |
+      (inputs.workflow-type == 'build-deploy-android' || 
+       inputs.workflow-type == 'build-deploy-both' || 
+       inputs.workflow-type == 'deploy-android' || 
+       inputs.workflow-type == 'deploy-both') &&
+      (inputs.workflow-type == 'deploy-android' || 
+       inputs.workflow-type == 'deploy-both' || 
+       (needs.pre-checks.result == 'success' && needs.build-android.result == 'success'))
+    uses: ./.github/workflows/deploy-reusable.yml
+    with:
+      platform: 'android'
+      profile: ${{ inputs.profile }}
+      release-notes: ${{ inputs.release-notes }}
+      artifact-android: ${{ needs.build-android.result == 'success' && format('android-{0}-{1}', inputs.profile, github.run_number) || '' }}
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  # Deploy iOS
+  deploy-ios:
+    name: Deploy iOS
+    needs: [pre-checks, build-ios]
+    if: |
+      (inputs.workflow-type == 'build-deploy-ios' || 
+       inputs.workflow-type == 'build-deploy-both' || 
+       inputs.workflow-type == 'deploy-ios' || 
+       inputs.workflow-type == 'deploy-both') &&
+      (inputs.workflow-type == 'deploy-ios' || 
+       inputs.workflow-type == 'deploy-both' || 
+       (needs.pre-checks.result == 'success' && needs.build-ios.result == 'success'))
+    uses: ./.github/workflows/deploy-reusable.yml
+    with:
+      platform: 'ios'
+      profile: ${{ inputs.profile }}
+      release-notes: ${{ inputs.release-notes }}
+      artifact-ios: ${{ needs.build-ios.result == 'success' && format('ios-{0}-{1}', inputs.profile, github.run_number) || '' }}
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      KEYS_FILE_CONTENT: ${{ secrets[format('KEYS_FILE_{0}', upper(inputs.profile))] }}
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+  # Summary
+  summary:
+    name: Workflow Summary
+    needs: [pre-checks, build-android, build-ios, deploy-android, deploy-ios]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📊 Generate Summary
+        run: |
+          echo "# Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow Type**: ${{ inputs.workflow-type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Profile**: ${{ inputs.profile }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Build Number**: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Pre-checks: ${{ needs.pre-checks.result }}" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ inputs.workflow-type }}" == *"android"* ]] || [[ "${{ inputs.workflow-type }}" == *"both"* ]]; then
+            echo "- Build Android: ${{ needs.build-android.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Deploy Android: ${{ needs.deploy-android.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ inputs.workflow-type }}" == *"ios"* ]] || [[ "${{ inputs.workflow-type }}" == *"both"* ]]; then
+            echo "- Build iOS: ${{ needs.build-ios.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Deploy iOS: ${{ needs.deploy-ios.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -3,9 +3,20 @@ const { defineConfig } = require('eslint/config')
 const expoConfig = require('eslint-config-expo/flat')
 
 module.exports = defineConfig([
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'scripts/**',
+      'actions-runner/**',
+      'build-output/**',
+      'android/**',
+      'ios/**',
+      '.expo/**'
+    ]
+  },
   expoConfig,
   {
-    ignores: ['dist/*', 'node_modules', 'scripts/*'],
     plugins: {
       prettier: require('eslint-plugin-prettier'),
       'simple-import-sort': require('eslint-plugin-simple-import-sort'),

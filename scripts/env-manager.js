@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')
@@ -29,7 +27,7 @@ function checkGPG() {
   try {
     execSync('gpg --version', { stdio: 'pipe' })
     return true
-  } catch (error) {
+  } catch {
     console.error('\n❌ GPG is not installed!')
     console.error('\nPlease install GPG:')
     console.error('  macOS:   brew install gnupg')

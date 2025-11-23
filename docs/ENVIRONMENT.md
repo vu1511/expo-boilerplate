@@ -134,22 +134,26 @@ yarn ios:production / android:production  # Build with production
 GPG is required for encrypting/decrypting environment files.
 
 **macOS:**
+
 ```bash
 brew install gnupg
 ```
 
 **Linux:**
+
 ```bash
 sudo apt-get install gnupg
 ```
 
 **Windows:**
+
 ```bash
 choco install gnupg
 # or download: https://www.gnupg.org/download/
 ```
 
 **Verify:**
+
 ```bash
 gpg --version
 ```
@@ -176,6 +180,7 @@ cp keys.development.json keys.production.json
 #### 2. Edit Each Environment
 
 **keys.development.json:**
+
 ```json
 {
   "public": {
@@ -199,6 +204,7 @@ cp keys.development.json keys.production.json
 ```
 
 **keys.staging.json:**
+
 ```json
 {
   "public": {
@@ -218,6 +224,7 @@ cp keys.development.json keys.production.json
 ```
 
 **keys.production.json:**
+
 ```json
 {
   "public": {
@@ -320,6 +327,7 @@ yarn android:dev                    # Build & run Android with development
 The easiest way to work with environments - just run the command and select your profile:
 
 **Start Dev Server:**
+
 ```bash
 yarn start
 # 🚀 Select Profile for: Start
@@ -330,6 +338,7 @@ yarn start
 ```
 
 **Build & Run on iOS:**
+
 ```bash
 yarn ios
 # 🚀 Select Profile for: iOS
@@ -340,6 +349,7 @@ yarn ios
 ```
 
 **Build & Run on Android:**
+
 ```bash
 yarn android
 # 🚀 Select Profile for: Android
@@ -350,11 +360,13 @@ yarn android
 ```
 
 **Note:** Prebuild is handled automatically by:
+
 - `yarn build` - Includes prebuild before building
 - `yarn android` / `yarn ios` - Handles prebuild internally
 - Direct commands available for CI/CD: `yarn prebuild:dev`, `yarn prebuild:staging`, `yarn prebuild:production`
 
 Features:
+
 - ✅ Visual status indicators
 - 🔓 Auto-decrypt if needed (prompts for password)
 - 🚀 Smart defaults (auto-select if only one environment available - works for all commands: start, ios, android)
@@ -475,21 +487,21 @@ Environment files use a two-tier structure:
 
 ### Available Variables
 
-| JSON Path | JS Access | Native Access | Security | Synced To | Description |
-|-----------|-----------|---------------|----------|-----------|-------------|
-| `public.APP_NAME` | `keys.APP_NAME` | `Keys.publicFor("APP_NAME")` | Public | Expo config | App display name |
-| `public.APP_SLUG` | `keys.APP_SLUG` | `Keys.publicFor("APP_SLUG")` | Public | Expo config | Expo slug |
-| `public.APP_VERSION` | `keys.APP_VERSION` | `Keys.publicFor("APP_VERSION")` | Public | Expo + Stores | Version number |
-| `public.APP_SCHEME` | `keys.APP_SCHEME` | `Keys.publicFor("APP_SCHEME")` | Public | Expo config | Deep link scheme |
-| `public.IOS_BUNDLE_ID` | `keys.IOS_BUNDLE_ID` | `Keys.publicFor("IOS_BUNDLE_ID")` | Public | Xcode | iOS bundle identifier |
-| `public.ANDROID_BUNDLE_ID` | `keys.ANDROID_BUNDLE_ID` | `Keys.publicFor("ANDROID_BUNDLE_ID")` | Public | Gradle | Android bundle identifier |
-| `public.API_URL` | `keys.API_URL` | `Keys.publicFor("API_URL")` | Public | Your code | API base URL |
-| `public.APP_ENV` | `keys.APP_ENV` | `Keys.publicFor("APP_ENV")` | Public | Your code | Environment name |
-| `public.ENABLE_ANALYTICS` | `keys.ENABLE_ANALYTICS` | `Keys.publicFor("ENABLE_ANALYTICS")` | Public | Your code | Enable analytics |
-| `public.ENABLE_DEBUG` | `keys.ENABLE_DEBUG` | `Keys.publicFor("ENABLE_DEBUG")` | Public | Your code | Debug mode |
-| `secure.API_KEY` | `keys.API_KEY` | `Keys.secureFor("API_KEY")` | **JNI Secure** | Your code | API key |
-| `secure.STRIPE_KEY` | `keys.STRIPE_KEY` | `Keys.secureFor("STRIPE_KEY")` | **JNI Secure** | Your code | Stripe key |
-| `secure.JWT_SECRET` | `keys.JWT_SECRET` | `Keys.secureFor("JWT_SECRET")` | **JNI Secure** | Your code | JWT secret |
+| JSON Path                  | JS Access                | Native Access                         | Security       | Synced To     | Description               |
+| -------------------------- | ------------------------ | ------------------------------------- | -------------- | ------------- | ------------------------- |
+| `public.APP_NAME`          | `keys.APP_NAME`          | `Keys.publicFor("APP_NAME")`          | Public         | Expo config   | App display name          |
+| `public.APP_SLUG`          | `keys.APP_SLUG`          | `Keys.publicFor("APP_SLUG")`          | Public         | Expo config   | Expo slug                 |
+| `public.APP_VERSION`       | `keys.APP_VERSION`       | `Keys.publicFor("APP_VERSION")`       | Public         | Expo + Stores | Version number            |
+| `public.APP_SCHEME`        | `keys.APP_SCHEME`        | `Keys.publicFor("APP_SCHEME")`        | Public         | Expo config   | Deep link scheme          |
+| `public.IOS_BUNDLE_ID`     | `keys.IOS_BUNDLE_ID`     | `Keys.publicFor("IOS_BUNDLE_ID")`     | Public         | Xcode         | iOS bundle identifier     |
+| `public.ANDROID_BUNDLE_ID` | `keys.ANDROID_BUNDLE_ID` | `Keys.publicFor("ANDROID_BUNDLE_ID")` | Public         | Gradle        | Android bundle identifier |
+| `public.API_URL`           | `keys.API_URL`           | `Keys.publicFor("API_URL")`           | Public         | Your code     | API base URL              |
+| `public.APP_ENV`           | `keys.APP_ENV`           | `Keys.publicFor("APP_ENV")`           | Public         | Your code     | Environment name          |
+| `public.ENABLE_ANALYTICS`  | `keys.ENABLE_ANALYTICS`  | `Keys.publicFor("ENABLE_ANALYTICS")`  | Public         | Your code     | Enable analytics          |
+| `public.ENABLE_DEBUG`      | `keys.ENABLE_DEBUG`      | `Keys.publicFor("ENABLE_DEBUG")`      | Public         | Your code     | Debug mode                |
+| `secure.API_KEY`           | `keys.API_KEY`           | `Keys.secureFor("API_KEY")`           | **JNI Secure** | Your code     | API key                   |
+| `secure.STRIPE_KEY`        | `keys.STRIPE_KEY`        | `Keys.secureFor("STRIPE_KEY")`        | **JNI Secure** | Your code     | Stripe key                |
+| `secure.JWT_SECRET`        | `keys.JWT_SECRET`        | `Keys.secureFor("JWT_SECRET")`        | **JNI Secure** | Your code     | JWT secret                |
 
 ### Adding New Variables
 
@@ -548,26 +560,26 @@ Use the `env` wrapper for clean, type-safe access:
 import { env } from '@/config/env'
 
 // App Configuration
-env.appName           // "Expo Boilerplate"
-env.appVersion        // "1.0.0"
-env.iosBundleId       // "com.yourcompany.app"
-env.androidBundleId    // "com.yourcompany.app"
+env.appName // "Expo Boilerplate"
+env.appVersion // "1.0.0"
+env.iosBundleId // "com.yourcompany.app"
+env.androidBundleId // "com.yourcompany.app"
 
 // API Configuration
-env.apiUrl            // "https://api.example.com"
-env.apiKey            // "your-api-key"
+env.apiUrl // "https://api.example.com"
+env.apiKey // "your-api-key"
 
 // Environment
-env.appEnv            // "development" | "staging" | "production"
+env.appEnv // "development" | "staging" | "production"
 
 // Feature Flags
-env.enableAnalytics   // false
-env.enableDebug       // true
+env.enableAnalytics // false
+env.enableDebug // true
 
 // Helper Methods
-env.isDevelopment()   // true
-env.isProduction()    // false
-env.isStaging()       // false
+env.isDevelopment() // true
+env.isProduction() // false
+env.isStaging() // false
 ```
 
 ### Direct Access
@@ -578,12 +590,12 @@ Direct access to `react-native-keys`:
 import keys from 'react-native-keys'
 
 // JavaScript access (flat structure)
-const appName = keys.APP_NAME     // From public.APP_NAME
-const apiKey = keys.API_KEY       // From secure.API_KEY
+const appName = keys.APP_NAME // From public.APP_NAME
+const apiKey = keys.API_KEY // From secure.API_KEY
 
 // Native access (extra JNI protection for secure keys)
-const secureApiKey = keys.secureFor('API_KEY')    // Maximum security
-const publicAppName = keys.publicFor('APP_NAME')  // Public key access
+const secureApiKey = keys.secureFor('API_KEY') // Maximum security
+const publicAppName = keys.publicFor('APP_NAME') // Public key access
 ```
 
 ### Real-World Examples
@@ -680,15 +692,15 @@ export default (): ExpoConfig => ({
   slug: keys.public.APP_SLUG || defaultKeys.public.APP_SLUG || 'expo-boilerplate',
   version: keys.public.APP_VERSION || defaultKeys.public.APP_VERSION || '1.0.0',
   scheme: keys.public.APP_SCHEME || defaultKeys.public.APP_SCHEME || 'expoboilerplate',
-  
+
   ios: {
     bundleIdentifier: keys.public.IOS_BUNDLE_ID || defaultKeys.public.IOS_BUNDLE_ID,
   },
-  
+
   android: {
     package: keys.public.ANDROID_BUNDLE_ID || defaultKeys.public.ANDROID_BUNDLE_ID,
   },
-  
+
   plugins: [
     'expo-router',
     [
@@ -703,6 +715,7 @@ export default (): ExpoConfig => ({
 ```
 
 **Fallback Priority:**
+
 1. **Environment-specific keys** (e.g., `keys.development.json`)
 2. **Default keys** (from `keys.example.json`)
 3. **Hardcoded fallbacks** (last resort)
@@ -745,6 +758,7 @@ yarn prebuild:production
 ```
 
 **Version is now synced to:**
+
 - ✅ Expo configuration
 - ✅ iOS Info.plist (CFBundleShortVersionString)
 - ✅ Android build.gradle (versionName)
@@ -753,6 +767,7 @@ yarn prebuild:production
 ### Environment Switching
 
 When switching environments, native code is automatically regenerated:
+
 1. `yarn build` includes prebuild automatically
 2. `yarn android` / `yarn ios` handle prebuild internally
 3. `app.config.ts` regenerates native files with correct bundle IDs
@@ -837,6 +852,7 @@ const apiKey = keys.secureFor('API_KEY')
 ### Password Best Practices
 
 **✅ DO:**
+
 - Use strong passwords (12+ characters)
 - Store in password manager (1Password, LastPass, BitWarden)
 - Commit encrypted files to git
@@ -844,6 +860,7 @@ const apiKey = keys.secureFor('API_KEY')
 - Use different API keys per environment
 
 **❌ DON'T:**
+
 - Never commit decrypted files
 - Never share password via email/Slack/SMS
 - Never reuse passwords across projects
@@ -851,6 +868,7 @@ const apiKey = keys.secureFor('API_KEY')
 - Never take screenshots of passwords
 
 **🔧 Development/Testing:**
+
 - For local development and testing, you can use the default password: `123456789`
 - This makes it easier to get started and test the environment system
 - **Important:** Change to a strong password for production/team use
@@ -892,18 +910,18 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install GPG
         run: sudo apt-get install gnupg
-      
+
       - name: Decrypt production keys
         env:
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
@@ -911,10 +929,10 @@ jobs:
           echo "$GPG_PASSWORD" | gpg --batch --yes --passphrase-fd 0 \
             --decrypt -o keys.production.json \
             config/encrypted/keys.production.json.gpg
-      
+
       - name: Install dependencies
         run: yarn install
-      
+
       - name: Build
         run: yarn prebuild:production
 ```
@@ -930,6 +948,7 @@ jobs:
 ```
 
 **Store Secrets:**
+
 1. Go to Settings → Secrets → Actions
 2. Add `GPG_PASSWORD` or full `KEYS_PRODUCTION_JSON`
 3. Reference in workflow as shown above
@@ -1035,6 +1054,7 @@ choco install gnupg
 **Error:** `❌ Decryption failed. Wrong password?`
 
 **Solution:**
+
 - Double-check password with team lead
 - For development/testing, try the default password: `123456789`
 - Ensure no extra spaces when pasting
@@ -1280,67 +1300,67 @@ Put sensitive data in `secure` section for JNI protection:
 
 ### Environment Management
 
-| Command | Description |
-|---------|-------------|
-| `yarn env` | Interactive environment selector (decrypt) |
-| `yarn env:encrypt` | Encrypt all environment files |
-| `yarn env:list` | List available encrypted files |
-| `yarn env:status` | Show encryption/decryption status |
-| `yarn env:setup` | Create initial `keys.development.json` from example |
-| `yarn env:verify` | Validate environment configuration |
+| Command            | Description                                         |
+| ------------------ | --------------------------------------------------- |
+| `yarn env`         | Interactive environment selector (decrypt)          |
+| `yarn env:encrypt` | Encrypt all environment files                       |
+| `yarn env:list`    | List available encrypted files                      |
+| `yarn env:status`  | Show encryption/decryption status                   |
+| `yarn env:setup`   | Create initial `keys.development.json` from example |
+| `yarn env:verify`  | Validate environment configuration                  |
 
 ### Development (Interactive Profile Selection)
 
-| Command | Description |
-|---------|-------------|
-| `yarn start` | **Interactive profile selection** → start dev server |
-| `yarn ios` | **Interactive profile selection** → build & run iOS (includes prebuild) |
+| Command        | Description                                                                 |
+| -------------- | --------------------------------------------------------------------------- |
+| `yarn start`   | **Interactive profile selection** → start dev server                        |
+| `yarn ios`     | **Interactive profile selection** → build & run iOS (includes prebuild)     |
 | `yarn android` | **Interactive profile selection** → build & run Android (includes prebuild) |
 
 ### Development (Direct - Skip Profile Selection)
 
-| Command | Description |
-|---------|-------------|
-| `yarn start:dev` | Start with development profile |
-| `yarn start:staging` | Start with staging profile |
-| `yarn start:production` | Start with production profile |
-| `yarn ios:dev` | Build & run iOS with development |
-| `yarn ios:staging` | Build & run iOS with staging |
-| `yarn ios:production` | Build & run iOS with production |
-| `yarn android:dev` | Build & run Android with development |
-| `yarn android:staging` | Build & run Android with staging |
-| `yarn android:production` | Build & run Android with production |
+| Command                   | Description                          |
+| ------------------------- | ------------------------------------ |
+| `yarn start:dev`          | Start with development profile       |
+| `yarn start:staging`      | Start with staging profile           |
+| `yarn start:production`   | Start with production profile        |
+| `yarn ios:dev`            | Build & run iOS with development     |
+| `yarn ios:staging`        | Build & run iOS with staging         |
+| `yarn ios:production`     | Build & run iOS with production      |
+| `yarn android:dev`        | Build & run Android with development |
+| `yarn android:staging`    | Build & run Android with staging     |
+| `yarn android:production` | Build & run Android with production  |
 
 ### CI/CD Prebuild Commands
 
-| Command | Description |
-|---------|-------------|
-| `yarn prebuild:dev` | Regenerate native code for development (CI/CD only) |
-| `yarn prebuild:staging` | Regenerate native code for staging (CI/CD only) |
-| `yarn prebuild:production` | Regenerate native code for production (CI/CD only) |
+| Command                    | Description                                         |
+| -------------------------- | --------------------------------------------------- |
+| `yarn prebuild:dev`        | Regenerate native code for development (CI/CD only) |
+| `yarn prebuild:staging`    | Regenerate native code for staging (CI/CD only)     |
+| `yarn prebuild:production` | Regenerate native code for production (CI/CD only)  |
 
 **Note:** For local development, use `yarn build` which includes prebuild automatically.
 
 ### Other Commands
 
-| Command | Description |
-|---------|-------------|
+| Command    | Description                              |
+| ---------- | ---------------------------------------- |
 | `yarn web` | Run on web (no profile selection needed) |
 
 ### Manual Override
 
-| Command | Description |
-|---------|-------------|
-| `KEYSFILE=keys.staging.json yarn start` | Override with specific keys file |
+| Command                                                  | Description                              |
+| -------------------------------------------------------- | ---------------------------------------- |
+| `KEYSFILE=keys.staging.json yarn start`                  | Override with specific keys file         |
 | `KEYSFILE=keys.production.json yarn prebuild:production` | Prebuild with specific keys file (CI/CD) |
 
 ### Verification
 
-| Command | Description |
-|---------|-------------|
+| Command           | Description                            |
+| ----------------- | -------------------------------------- |
 | `yarn env:verify` | Validate JSON syntax and required keys |
 | `yarn env:status` | Check which environments are decrypted |
-| `yarn env:list` | List all encrypted files with metadata |
+| `yarn env:list`   | List all encrypted files with metadata |
 
 ---
 
@@ -1353,7 +1373,7 @@ You now have a complete multi-environment setup with:
 ✅ **Team Friendly**: Encrypted files in git, password-protected  
 ✅ **CI/CD Ready**: Direct commands for automated pipelines  
 ✅ **Type Safe**: TypeScript definitions for all environment variables  
-✅ **Cross Platform**: Works on iOS, Android, macOS, Linux, Windows  
+✅ **Cross Platform**: Works on iOS, Android, macOS, Linux, Windows
 
 ### Next Steps
 
@@ -1370,4 +1390,3 @@ You now have a complete multi-environment setup with:
 ---
 
 **Your environment is now secure, flexible, and team-friendly! 🔐🚀**
-

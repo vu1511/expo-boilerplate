@@ -11,6 +11,7 @@ yarn build:setup
 ```
 
 This will:
+
 - Install EAS CLI
 - Login to your Expo account
 - Setup Android/iOS credentials
@@ -18,11 +19,11 @@ This will:
 
 ## Build Profiles
 
-| Profile | Purpose | Output | Distribution |
-|---------|---------|--------|--------------|
+| Profile         | Purpose                   | Output    | Distribution              |
+| --------------- | ------------------------- | --------- | ------------------------- |
 | **Development** | Dev client with debugging | APK / IPA | Firebase App Distribution |
-| **Staging** | Internal testing (ad-hoc) | APK / IPA | Firebase App Distribution |
-| **Production** | App store release | AAB / IPA | Google Play / App Store |
+| **Staging**     | Internal testing (ad-hoc) | APK / IPA | Firebase App Distribution |
+| **Production**  | App store release         | AAB / IPA | Google Play / App Store   |
 
 ## Commands
 
@@ -33,6 +34,7 @@ yarn build
 ```
 
 Interactive menu to select:
+
 1. Platform: Android, iOS, or Both
 2. Profile: Development, Staging, or Production
 3. Build starts automatically
@@ -46,6 +48,7 @@ yarn build:deploy
 ```
 
 Same as `yarn build` but automatically deploys to:
+
 - **Development/Staging**: Firebase App Distribution
 - **Production**: Google Play / App Store (via EAS Submit)
 
@@ -69,6 +72,7 @@ yarn build:deploy
 ```
 
 **Use when:**
+
 - ✅ Distributing to testers on physical devices
 - ✅ Need QA team to test on their devices
 - ✅ Want Hot Reload + debugging on physical devices
@@ -84,6 +88,7 @@ npx expo run:ios
 ```
 
 **Use when:**
+
 - ✅ Local development on simulator/emulator
 - ✅ Quick iteration during active coding
 - ✅ Debugging on connected device via USB
@@ -92,11 +97,11 @@ npx expo run:ios
 
 ## Build Output
 
-| Profile | Android | iOS | Size |
-|---------|---------|-----|------|
-| Development | `.apk` (debug) | `.ipa` (debug) | ~50-100 MB |
-| Staging | `.apk` (release) | `.ipa` (ad-hoc) | ~30-50 MB |
-| Production | `.aab` (release) | `.ipa` (release) | ~30-50 MB |
+| Profile     | Android          | iOS              | Size       |
+| ----------- | ---------------- | ---------------- | ---------- |
+| Development | `.apk` (debug)   | `.ipa` (debug)   | ~50-100 MB |
+| Staging     | `.apk` (release) | `.ipa` (ad-hoc)  | ~30-50 MB  |
+| Production  | `.aab` (release) | `.ipa` (release) | ~30-50 MB  |
 
 All files saved to: `./build-output/app-{platform}-{profile}.{ext}`
 
@@ -184,6 +189,7 @@ keys.production.json     # Production settings, prod API
 ```
 
 Required variables:
+
 - `IOS_BUNDLE_ID` / `ANDROID_BUNDLE_ID` - App identifier
 - `FIREBASE_ANDROID_APP_ID` / `FIREBASE_IOS_APP_ID` - Firebase distribution
 - `API_URL` - Backend API endpoint
@@ -267,13 +273,14 @@ yarn build  # Already includes: expo prebuild --clean
 
 ## Build Times
 
-| Build Type | First Build | Subsequent |
-|------------|-------------|------------|
-| Android only | 15-20 min | 5-10 min |
-| iOS only | 20-30 min | 10-15 min |
-| Both platforms | 30-40 min | 15-20 min |
+| Build Type     | First Build | Subsequent |
+| -------------- | ----------- | ---------- |
+| Android only   | 15-20 min   | 5-10 min   |
+| iOS only       | 20-30 min   | 10-15 min  |
+| Both platforms | 30-40 min   | 15-20 min  |
 
 **Tips:**
+
 - First build downloads dependencies (slow)
 - Subsequent builds reuse cache (fast)
 - Both platforms build in parallel (same time as longest)
@@ -281,6 +288,7 @@ yarn build  # Already includes: expo prebuild --clean
 ## Cost
 
 All local builds are **100% FREE**:
+
 - ✅ EAS Build Local: Free (builds on your machine)
 - ✅ EAS Submit: Free (only submission, no build)
 - ❌ EAS Build Cloud: Paid (builds on Expo servers)
@@ -310,4 +318,3 @@ npx expo run:ios        # Quick local dev
 eas submit --platform android   # Submit to Google Play
 eas submit --platform ios       # Submit to App Store
 ```
-

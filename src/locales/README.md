@@ -28,7 +28,7 @@ import { useTranslation } from '@/hooks/useTranslation'
 
 export default function MyComponent() {
   const { t } = useTranslation()
-  
+
   return <Text>{t('common.submit')}</Text>
 }
 ```
@@ -125,20 +125,18 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import * as Localization from 'expo-localization'
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: { en, vi },
-    lng: Localization.getLocales()[0]?.languageCode || 'en',
-    fallbackLng: 'en',
-    compatibilityJSON: 'v3', // Important for React Native
-    interpolation: {
-      escapeValue: false,
-    },
-    react: {
-      useSuspense: false, // Important for React Native
-    },
-  })
+i18n.use(initReactI18next).init({
+  resources: { en, vi },
+  lng: Localization.getLocales()[0]?.languageCode || 'en',
+  fallbackLng: 'en',
+  compatibilityJSON: 'v3', // Important for React Native
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false, // Important for React Native
+  },
+})
 ```
 
 ## 📱 Device Language Detection
@@ -156,11 +154,13 @@ If the device language is not supported, it falls back to English.
 ### 1. Always Use Translation Keys
 
 ❌ **Don't**:
+
 ```typescript
 <Text>Submit</Text>
 ```
 
 ✅ **Do**:
+
 ```typescript
 <Text>{t('common.submit')}</Text>
 ```
@@ -168,6 +168,7 @@ If the device language is not supported, it falls back to English.
 ### 2. Organize Keys Logically
 
 Group related translations together:
+
 - `common.*` - Common UI elements
 - `navigation.*` - Navigation labels
 - `auth.*` - Authentication related
@@ -211,11 +212,13 @@ t('settings.saveChanges')
 ## 🌍 Adding New Languages
 
 1. Create a new translation file:
+
 ```bash
 touch locales/fr.json
 ```
 
 2. Add translations:
+
 ```json
 {
   "common": {
@@ -226,6 +229,7 @@ touch locales/fr.json
 ```
 
 3. Update `locales/index.ts`:
+
 ```typescript
 import fr from './fr.json'
 
@@ -237,6 +241,7 @@ const resources = {
 ```
 
 4. Update `LanguageSwitcher` component:
+
 ```typescript
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },

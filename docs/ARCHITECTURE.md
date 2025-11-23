@@ -64,6 +64,7 @@ This project uses a **feature-based architecture** for scalability and maintaina
 **Why?** Code is organized by business domain (features) rather than by technical layer (screens, components, etc.)
 
 **Benefits:**
+
 - Related code stays together
 - Easy to find and modify code
 - Better team collaboration
@@ -108,6 +109,7 @@ export type { User, AuthTokens } from './types'
 ```
 
 Other code imports from the public API:
+
 ```typescript
 import { useAuth, LoginForm } from '@/features/auth'
 ```
@@ -117,6 +119,7 @@ import { useAuth, LoginForm } from '@/features/auth'
 Features are self-contained and hide implementation details.
 
 **Benefits:**
+
 - Clear boundaries
 - Easier refactoring
 - Prevents tight coupling
@@ -155,8 +158,8 @@ export const useAuthStore = create(
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => storage),
-    }
-  )
+    },
+  ),
 )
 ```
 
@@ -225,6 +228,7 @@ We use `@/` alias for absolute imports:
 ```
 
 Usage:
+
 ```typescript
 import { useAuth } from '@/features/auth'
 import { ThemedText } from '@/components/themed-text'
@@ -253,6 +257,7 @@ We use **i18next** for translations.
 ### Adding Translations
 
 1. Add keys to translation files:
+
 ```json
 // locales/en.json
 {
@@ -266,6 +271,7 @@ We use **i18next** for translations.
 ```
 
 2. Use in components:
+
 ```typescript
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -278,9 +284,10 @@ function MyComponent() {
 ### Type Safety
 
 Translation keys are type-checked:
+
 ```typescript
-t('auth.login.title')  // ✅ Valid key
-t('invalid.key')       // ❌ TypeScript error
+t('auth.login.title') // ✅ Valid key
+t('invalid.key') // ❌ TypeScript error
 ```
 
 ## Styling
@@ -368,11 +375,13 @@ yarn test:coverage     # With coverage
 ## Adding a New Feature
 
 1. **Create folder structure:**
+
 ```bash
 mkdir -p src/features/my-feature/{components,hooks,store,types}
 ```
 
 2. **Create types:**
+
 ```typescript
 // src/features/my-feature/types/index.ts
 export interface MyFeatureData {
@@ -381,6 +390,7 @@ export interface MyFeatureData {
 ```
 
 3. **Create store:**
+
 ```typescript
 // src/features/my-feature/store/myFeatureStore.ts
 import { create } from 'zustand'
@@ -391,6 +401,7 @@ export const useMyFeatureStore = create((set) => ({
 ```
 
 4. **Create hooks:**
+
 ```typescript
 // src/features/my-feature/hooks/useMyFeature.ts
 export function useMyFeature() {
@@ -399,6 +410,7 @@ export function useMyFeature() {
 ```
 
 5. **Create components:**
+
 ```typescript
 // src/features/my-feature/components/MyFeatureComponent.tsx
 export function MyFeatureComponent() {
@@ -407,6 +419,7 @@ export function MyFeatureComponent() {
 ```
 
 6. **Create public API:**
+
 ```typescript
 // src/features/my-feature/index.ts
 export { useMyFeature } from './hooks/useMyFeature'
@@ -415,6 +428,7 @@ export type { MyFeatureData } from './types'
 ```
 
 7. **Use in routes:**
+
 ```typescript
 // src/app/my-screen.tsx
 import { MyFeatureComponent, useMyFeature } from '@/features/my-feature'
@@ -442,8 +456,8 @@ export const myFeatureService = {
 export function useMyForm() {
   const [values, setValues] = useState({})
   const [errors, setErrors] = useState({})
-  
-  return { values, errors, /* ... */ }
+
+  return { values, errors /* ... */ }
 }
 ```
 
@@ -514,4 +528,3 @@ API_URL=https://api.example.com
 ## Questions?
 
 See `/src/features/README.md` for more details on feature-based architecture.
-

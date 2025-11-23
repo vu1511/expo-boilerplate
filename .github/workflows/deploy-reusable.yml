@@ -1,0 +1,240 @@
+name: Reusable Deploy Workflow
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: 'Platform to deploy (android, ios, all)'
+        required: true
+        type: string
+      profile:
+        description: 'Build profile (development, staging, production)'
+        required: true
+        type: string
+      release-notes:
+        description: 'Release notes for deployment'
+        required: false
+        type: string
+        default: ''
+      artifact-android:
+        description: 'Android artifact name to download'
+        required: false
+        type: string
+      artifact-ios:
+        description: 'iOS artifact name to download'
+        required: false
+        type: string
+    secrets:
+      EXPO_TOKEN:
+        required: true
+      KEYS_FILE_CONTENT:
+        required: true
+      FIREBASE_TOKEN:
+        required: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.platform }} (${{ inputs.profile }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: 📥 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 📥 Download Android artifact
+        if: (inputs.platform == 'android' || inputs.platform == 'all') && inputs.artifact-android != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-android }}
+          path: build-output/
+
+      - name: 📥 Download iOS artifact
+        if: (inputs.platform == 'ios' || inputs.platform == 'all') && inputs.artifact-ios != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-ios }}
+          path: build-output/
+
+      - name: 📝 Create keys file
+        run: |
+          echo '${{ secrets.KEYS_FILE_CONTENT }}' > keys.${{ inputs.profile }}.json
+          echo "✓ Created keys.${{ inputs.profile }}.json"
+
+      - name: 🔧 Setup Firebase CLI
+        if: inputs.profile != 'production'
+        run: |
+          yarn global add firebase-tools
+          echo "✓ Firebase CLI installed"
+
+      - name: 🔧 Setup EAS CLI
+        if: inputs.profile == 'production'
+        run: |
+          yarn global add eas-cli
+          echo "✓ EAS CLI installed"
+
+      - name: 🔐 Authenticate Firebase
+        if: inputs.profile != 'production'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -n "$FIREBASE_TOKEN" ]; then
+            echo "✓ Using Firebase CI token"
+          else
+            echo "⚠️  FIREBASE_TOKEN not set, deployment may fail"
+          fi
+
+      - name: 📤 Deploy to Firebase App Distribution
+        if: inputs.profile != 'production'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          # Read Firebase App IDs from keys file
+          FIREBASE_ANDROID_APP_ID=$(node -pe "JSON.parse(require('fs').readFileSync('keys.${{ inputs.profile }}.json', 'utf8')).public?.FIREBASE_ANDROID_APP_ID || ''")
+          FIREBASE_IOS_APP_ID=$(node -pe "JSON.parse(require('fs').readFileSync('keys.${{ inputs.profile }}.json', 'utf8')).public?.FIREBASE_IOS_APP_ID || ''")
+          FIREBASE_GROUP=$(node -pe "JSON.parse(require('fs').readFileSync('keys.${{ inputs.profile }}.json', 'utf8')).public?.FIREBASE_GROUP || 'testers'")
+
+          RELEASE_NOTES="${{ inputs.release-notes }}"
+          if [ -z "$RELEASE_NOTES" ]; then
+            RELEASE_NOTES="Build from ${{ inputs.profile }} profile"
+          fi
+
+          echo "📱 Firebase Android App ID: $([ -n "$FIREBASE_ANDROID_APP_ID" ] && echo '✓' || echo '✗ Not found')"
+          echo "📱 Firebase iOS App ID: $([ -n "$FIREBASE_IOS_APP_ID" ] && echo '✓' || echo '✗ Not found')"
+          echo "📝 Release notes: $RELEASE_NOTES"
+          echo ""
+
+          # Deploy Android (matching deploy-core.js deployToFirebase function)
+          if [ "${{ inputs.platform }}" = "android" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            if [ -n "$FIREBASE_ANDROID_APP_ID" ]; then
+              # Find Android artifact (supports both .apk and .aab)
+              ANDROID_FILE=$(find build-output -name "app-android-${{ inputs.profile }}.*" -type f | head -n 1)
+              if [ -n "$ANDROID_FILE" ] && [ -f "$ANDROID_FILE" ]; then
+                echo "📱 Uploading $(basename "$ANDROID_FILE")..."
+                echo "  Using Firebase App ID: $FIREBASE_ANDROID_APP_ID"
+                firebase appdistribution:distribute "$ANDROID_FILE" \
+                  --app "$FIREBASE_ANDROID_APP_ID" \
+                  --release-notes "$RELEASE_NOTES" \
+                  --groups "$FIREBASE_GROUP" \
+                  --token "$FIREBASE_TOKEN"
+                echo "  ✓ $(basename "$ANDROID_FILE") uploaded successfully"
+              else
+                echo "⚠️  Android artifact not found in build-output/"
+              fi
+            else
+              echo "⚠️  FIREBASE_ANDROID_APP_ID not found for android, skipping"
+              echo "    Add FIREBASE_ANDROID_APP_ID to keys.${{ inputs.profile }}.json"
+            fi
+            echo ""
+          fi
+
+          # Deploy iOS (matching deploy-core.js deployToFirebase function)
+          if [ "${{ inputs.platform }}" = "ios" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            if [ -n "$FIREBASE_IOS_APP_ID" ]; then
+              IOS_FILE="build-output/app-ios-${{ inputs.profile }}.ipa"
+              if [ -f "$IOS_FILE" ]; then
+                echo "📱 Uploading $(basename "$IOS_FILE")..."
+                echo "  Using Firebase App ID: $FIREBASE_IOS_APP_ID"
+                firebase appdistribution:distribute "$IOS_FILE" \
+                  --app "$FIREBASE_IOS_APP_ID" \
+                  --release-notes "$RELEASE_NOTES" \
+                  --groups "$FIREBASE_GROUP" \
+                  --token "$FIREBASE_TOKEN"
+                echo "  ✓ $(basename "$IOS_FILE") uploaded successfully"
+              else
+                echo "⚠️  iOS artifact not found: $IOS_FILE"
+              fi
+            else
+              echo "⚠️  FIREBASE_IOS_APP_ID not found for ios, skipping"
+              echo "    Add FIREBASE_IOS_APP_ID to keys.${{ inputs.profile }}.json"
+            fi
+            echo ""
+          fi
+
+      - name: 📤 Submit to App Stores (Production)
+        if: inputs.profile == 'production'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  📤 Submitting to App Stores"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+
+          # Submit Android to Play Store (matching deploy-core.js submitToStores function)
+          if [ "${{ inputs.platform }}" = "android" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            # Find Android artifact (supports both .apk and .aab)
+            ANDROID_FILE=$(find build-output -name "app-android-${{ inputs.profile }}.*" -type f | head -n 1)
+            if [ -n "$ANDROID_FILE" ] && [ -f "$ANDROID_FILE" ]; then
+              echo "📱 Submitting $(basename "$ANDROID_FILE") to Google Play Store..."
+              echo ""
+              
+              # Note: Release notes are not supported via CLI (matching deploy-core.js)
+              if [ -n "${{ inputs.release-notes }}" ]; then
+                echo "  📝 Release notes: ${{ inputs.release-notes }}"
+                echo "  ⚠️  Android release notes must be added manually in Google Play Console"
+                echo "     EAS Submit does not support Android release notes via CLI or eas.json"
+                echo ""
+              fi
+              
+              npx eas submit --platform android --path "$ANDROID_FILE" --profile ${{ inputs.profile }} --non-interactive
+              echo ""
+              echo "  ✓ $(basename "$ANDROID_FILE") submitted to Google Play Store successfully"
+            else
+              echo "⚠️  Android artifact not found in build-output/"
+            fi
+            echo ""
+          fi
+
+          # Submit iOS to App Store (matching deploy-core.js submitToStores function)
+          if [ "${{ inputs.platform }}" = "ios" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            IOS_FILE="build-output/app-ios-${{ inputs.profile }}.ipa"
+            if [ -f "$IOS_FILE" ]; then
+              echo "📱 Submitting $(basename "$IOS_FILE") to App Store..."
+              echo ""
+              
+              # Note: Release notes are not supported via CLI (matching deploy-core.js)
+              if [ -n "${{ inputs.release-notes }}" ]; then
+                echo "  📝 Release notes: ${{ inputs.release-notes }}"
+                echo "  ⚠️  iOS release notes must be added manually in App Store Connect"
+                echo "     --what-to-test flag requires Enterprise plan (not available on your tier)"
+                echo ""
+              fi
+              
+              npx eas submit --platform ios --path "$IOS_FILE" --profile ${{ inputs.profile }} --non-interactive
+              echo ""
+              echo "  ✓ $(basename "$IOS_FILE") submitted to App Store successfully"
+            else
+              echo "⚠️  iOS artifact not found: $IOS_FILE"
+            fi
+            echo ""
+          fi
+
+      - name: 📊 Deployment Summary
+        if: always()
+        run: |
+          echo "### Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Platform**: ${{ inputs.platform }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Profile**: ${{ inputs.profile }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Number**: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release Notes**: ${{ inputs.release-notes || 'Default' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.profile }}" = "production" ]; then
+            echo "🔗 **Next Steps**:" >> $GITHUB_STEP_SUMMARY
+            echo "- iOS: Add release notes in [App Store Connect](https://appstoreconnect.apple.com)" >> $GITHUB_STEP_SUMMARY
+            echo "- Android: Add release notes in [Google Play Console](https://play.google.com/console)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🔗 **View in Firebase**: [App Distribution Console](https://console.firebase.google.com/project/_/appdistribution)" >> $GITHUB_STEP_SUMMARY
+          fi

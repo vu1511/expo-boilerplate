@@ -56,7 +56,7 @@ const styles = StyleSheet.create((theme) => ({
 ```tsx
 import { commonStyles } from '@/theme'
 
-<View style={[commonStyles.flex_row, commonStyles.p_md, commonStyles.gap_xs]}>
+;<View style={[commonStyles.flex_row, commonStyles.p_md, commonStyles.gap_xs]}>
   <Text style={commonStyles.m_sm}>Quick styling</Text>
 </View>
 ```
@@ -68,7 +68,7 @@ import { useTheme } from '@/hooks/use-theme'
 
 const Component = () => {
   const { themeMode, currentTheme, setThemeMode, isSystemTheme } = useTheme()
-  
+
   return (
     <>
       <Text>Current: {currentTheme}</Text>
@@ -83,41 +83,44 @@ const Component = () => {
 ## Design Tokens
 
 ### Colors
+
 ```typescript
-theme.colors.text           // Primary text
-theme.colors.textDim        // Secondary text
-theme.colors.background     // Background
-theme.colors.border         // Borders
-theme.colors.tint           // Primary/accent color
-theme.colors.tintInactive   // Inactive state
-theme.colors.separator      // Dividers
-theme.colors.error          // Error state
+theme.colors.text // Primary text
+theme.colors.textDim // Secondary text
+theme.colors.background // Background
+theme.colors.border // Borders
+theme.colors.tint // Primary/accent color
+theme.colors.tintInactive // Inactive state
+theme.colors.separator // Dividers
+theme.colors.error // Error state
 theme.colors.errorBackground
 theme.colors.transparent
 
 // Nested palette (full TypeScript support)
-theme.colors.palette.neutral[100-900]
-theme.colors.palette.primary[100-600]
-theme.colors.palette.secondary[100-500]
-theme.colors.palette.accent[100-500]
-theme.colors.palette.angry[100,500]
-theme.colors.palette.overlay[20,50]
+theme.colors.palette.neutral[100 - 900]
+theme.colors.palette.primary[100 - 600]
+theme.colors.palette.secondary[100 - 500]
+theme.colors.palette.accent[100 - 500]
+theme.colors.palette.angry[(100, 500)]
+theme.colors.palette.overlay[(20, 50)]
 ```
 
 ### Spacing (8pt grid)
+
 ```typescript
-theme.spacing.xxxs  // 2
-theme.spacing.xxs   // 4
-theme.spacing.xs    // 8
-theme.spacing.sm    // 12
-theme.spacing.md    // 16
-theme.spacing.lg    // 24
-theme.spacing.xl    // 32
-theme.spacing.xxl   // 48
-theme.spacing.xxxl  // 64
+theme.spacing.xxxs // 2
+theme.spacing.xxs // 4
+theme.spacing.xs // 8
+theme.spacing.sm // 12
+theme.spacing.md // 16
+theme.spacing.lg // 24
+theme.spacing.xl // 32
+theme.spacing.xxl // 48
+theme.spacing.xxxl // 64
 ```
 
 ### Typography
+
 ```typescript
 // Font families (Inter)
 theme.fontFamily.inter.regular
@@ -126,26 +129,26 @@ theme.fontFamily.inter.semiBold
 theme.fontFamily.inter.bold
 
 // Font sizes
-theme.fontSize.xs    // 12
-theme.fontSize.sm    // 14
-theme.fontSize.md    // 16
-theme.fontSize.lg    // 18
-theme.fontSize.xl    // 20
-theme.fontSize.xxl   // 24
-theme.fontSize.xxxl  // 32
+theme.fontSize.xs // 12
+theme.fontSize.sm // 14
+theme.fontSize.md // 16
+theme.fontSize.lg // 18
+theme.fontSize.xl // 20
+theme.fontSize.xxl // 24
+theme.fontSize.xxxl // 32
 theme.fontSize.display // 40
 
 // Font weights
-theme.fontWeight.light     // 300
-theme.fontWeight.regular   // 400
-theme.fontWeight.medium    // 500
-theme.fontWeight.semiBold  // 600
-theme.fontWeight.bold      // 700
+theme.fontWeight.light // 300
+theme.fontWeight.regular // 400
+theme.fontWeight.medium // 500
+theme.fontWeight.semiBold // 600
+theme.fontWeight.bold // 700
 
 // Line heights
-theme.lineHeight.xs   // 16
-theme.lineHeight.sm   // 20
-theme.lineHeight.md   // 24
+theme.lineHeight.xs // 16
+theme.lineHeight.sm // 20
+theme.lineHeight.md // 24
 // ... etc
 
 // Semantic typography
@@ -163,38 +166,41 @@ theme.typography.buttonLarge
 ```
 
 ### Other Tokens
+
 ```typescript
 // Border radius
-theme.borderRadius.none  // 0
-theme.borderRadius.sm    // 4
-theme.borderRadius.md    // 8
-theme.borderRadius.lg    // 12
-theme.borderRadius.xl    // 16
-theme.borderRadius.full  // 9999
+theme.borderRadius.none // 0
+theme.borderRadius.sm // 4
+theme.borderRadius.md // 8
+theme.borderRadius.lg // 12
+theme.borderRadius.xl // 16
+theme.borderRadius.full // 9999
 
 // Animation timing
-theme.timing.quick   // 150
-theme.timing.normal  // 300
-theme.timing.slow    // 500
+theme.timing.quick // 150
+theme.timing.normal // 300
+theme.timing.slow // 500
 ```
 
 ## Common Utilities (snake_case)
 
 ### Flexbox
+
 ```typescript
 // Direction
-flex_row, flex_col
+;(flex_row, flex_col)
 
 // Alignment
-items_center, items_start, items_end
-justify_center, justify_between, justify_around, justify_evenly
-self_start, self_center, self_end
+;(items_center, items_start, items_end)
+;(justify_center, justify_between, justify_around, justify_evenly)
+;(self_start, self_center, self_end)
 
 // Flex properties
-flex_1, grow_1, shrink_0, shrink_1
+;(flex_1, grow_1, shrink_0, shrink_1)
 ```
 
 ### Spacing Utilities
+
 Pattern: `{property}_{direction}_{size}`
 
 **Padding:** `p_xs`, `px_md`, `py_lg`, `pt_sm`, `pr_xl`, `pb_xs`, `pl_md`
@@ -204,13 +210,15 @@ Pattern: `{property}_{direction}_{size}`
 Sizes: `xxxs`, `xxs`, `xs`, `sm`, `md`, `lg`, `xl`, `xxl`, `xxxl`
 
 ### Opacity
+
 ```typescript
-opacity_0, opacity_50, opacity_75, opacity_100
+;(opacity_0, opacity_50, opacity_75, opacity_100)
 ```
 
 ## Advanced Usage
 
 ### Responsive Design
+
 ```tsx
 const styles = StyleSheet.create((theme) => ({
   container: {
@@ -224,32 +232,33 @@ const styles = StyleSheet.create((theme) => ({
 ```
 
 ### Dynamic Styles
+
 ```tsx
 const Component = ({ variant }: Props) => {
   const styles = StyleSheet.create((theme) => ({
     container: {
-      backgroundColor: variant === 'primary' 
-        ? theme.colors.tint 
-        : theme.colors.background,
+      backgroundColor: variant === 'primary' ? theme.colors.tint : theme.colors.background,
     },
   }))
-  
+
   return <View style={styles.container} />
 }
 ```
 
 ### Access Theme Outside Components
+
 ```tsx
 import { UnistylesRuntime } from 'react-native-unistyles'
 
-UnistylesRuntime.themeName            // 'light' | 'dark'
-UnistylesRuntime.setTheme('dark')     // Change theme
-UnistylesRuntime.theme.colors.tint    // Access theme values
+UnistylesRuntime.themeName // 'light' | 'dark'
+UnistylesRuntime.setTheme('dark') // Change theme
+UnistylesRuntime.theme.colors.tint // Access theme values
 ```
 
 ## Theme Configuration
 
 Theme preferences are automatically persisted using MMKV storage:
+
 - **System mode** (default): Follows device theme
 - **Light mode**: Always light
 - **Dark mode**: Always dark
@@ -267,13 +276,14 @@ Theme is initialized at app launch via `getInitialTheme()` in `src/theme/utils.t
 
 ❌ Don't hardcode colors: `color: '#000'`  
 ❌ Don't hardcode spacing: `padding: 16`  
-❌ Don't mix theme approaches  
+❌ Don't mix theme approaches
 
 ## Testing
 
 Theme utilities are fully tested. See `src/theme/__test__/` for:
+
 - ✅ Theme initialization tests
-- ✅ Storage preference tests  
+- ✅ Storage preference tests
 - ✅ System theme fallback tests
 - ✅ Theme switching tests
 
@@ -284,4 +294,3 @@ Run tests: `npm test -- src/theme/__test__/utils.test.ts`
 - [Unistyles Docs](https://reactnativeunistyles.vercel.app/)
 - [TypeScript Support](https://reactnativeunistyles.vercel.app/reference/typescript/)
 - Theme tests: `src/theme/__test__/`
-

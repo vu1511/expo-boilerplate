@@ -1,0 +1,210 @@
+name: Reusable Build Workflow
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: 'Platform to build (android, ios, all)'
+        required: true
+        type: string
+      profile:
+        description: 'Build profile (development, staging, production)'
+        required: true
+        type: string
+      use-local-runner:
+        description: 'Force use of local/self-hosted runner'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      EXPO_TOKEN:
+        required: true
+      KEYS_FILE_CONTENT:
+        required: true
+    outputs:
+      build-number:
+        description: 'Build number used'
+        value: ${{ jobs.build.outputs.build-number }}
+      artifacts-android:
+        description: 'Android artifact name'
+        value: ${{ jobs.build.outputs.artifacts-android }}
+      artifacts-ios:
+        description: 'iOS artifact name'
+        value: ${{ jobs.build.outputs.artifacts-ios }}
+
+jobs:
+  build:
+    name: Build ${{ inputs.platform }} (${{ inputs.profile }})
+    runs-on: ${{ inputs.use-local-runner && 'self-hosted' || (inputs.platform == 'ios' && 'macos-14' || 'ubuntu-latest') }}
+    timeout-minutes: 90
+
+    outputs:
+      build-number: ${{ steps.set-build-number.outputs.build-number }}
+      artifacts-android: ${{ steps.set-artifacts.outputs.android }}
+      artifacts-ios: ${{ steps.set-artifacts.outputs.ios }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: 🔧 Setup Java (for Android)
+        if: inputs.platform == 'android' || inputs.platform == 'all'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🔧 Setup Android SDK
+        if: inputs.platform == 'android' || inputs.platform == 'all'
+        uses: android-actions/setup-android@v3
+
+      - name: 💾 Cache Gradle dependencies
+        id: gradle-cache
+        if: inputs.platform == 'android' || inputs.platform == 'all'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('package.json', 'yarn.lock', 'app.config.ts', 'eas.json') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 💾 Cache CocoaPods
+        id: pods-cache
+        if: (inputs.platform == 'ios' || inputs.platform == 'all') && runner.os == 'macOS'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile', 'yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: 🍎 Setup Xcode (for iOS on local builds)
+        if: (inputs.platform == 'ios' || inputs.platform == 'all') && runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
+      - name: 📥 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🔢 Set build number
+        id: set-build-number
+        run: |
+          BUILD_NUMBER="${{ github.run_number }}"
+          echo "build-number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "Build number: $BUILD_NUMBER"
+
+      - name: 📝 Create keys file
+        run: |
+          echo '${{ secrets.KEYS_FILE_CONTENT }}' > keys.${{ inputs.profile }}.json
+          echo "✓ Created keys.${{ inputs.profile }}.json"
+
+      - name: 🔧 Setup EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          yarn global add eas-cli
+          export EXPO_TOKEN="$EXPO_TOKEN"
+          eas whoami
+
+      - name: 💾 Cache EAS build local
+        id: eas-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.eas-build-local
+          key: ${{ runner.os }}-eas-build-local-${{ hashFiles('eas.json', 'app.config.ts', 'yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-eas-build-local-
+
+      - name: 🏗️ Prebuild native code
+        env:
+          KEYSFILE: keys.${{ inputs.profile }}.json
+        run: |
+          if [ "${{ inputs.platform }}" = "all" ]; then
+            echo "Prebuilding Android..."
+            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform android --clean
+            echo "Prebuilding iOS..."
+            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ios --clean
+          else
+            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ${{ inputs.platform }} --clean
+          fi
+
+      - name: 🚀 Build locally with EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          KEYSFILE: keys.${{ inputs.profile }}.json
+        run: |
+          echo "Building locally on ${{ runner.os }} runner..."
+
+          if [ "${{ inputs.platform }}" = "all" ]; then
+            eas build --platform android --profile ${{ inputs.profile }} --local --non-interactive &
+            ANDROID_PID=$!
+            
+            eas build --platform ios --profile ${{ inputs.profile }} --local --non-interactive &
+            IOS_PID=$!
+            
+            wait $ANDROID_PID
+            wait $IOS_PID
+          else
+            eas build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --local --non-interactive
+          fi
+
+      - name: 📦 Organize build artifacts
+        id: set-artifacts
+        run: |
+          mkdir -p build-output
+          
+          if [ "${{ inputs.platform }}" = "android" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            if [ "${{ inputs.profile }}" = "production" ]; then
+              ANDROID_EXT="aab"
+            else
+              ANDROID_EXT="apk"
+            fi
+            
+            for file in build-*.${ANDROID_EXT}; do
+              if [ -f "$file" ]; then
+                NEW_NAME="app-android-${{ inputs.profile }}.${ANDROID_EXT}"
+                mv "$file" "build-output/$NEW_NAME"
+                echo "✓ Moved: $file → build-output/$NEW_NAME"
+                echo "android=$NEW_NAME" >> $GITHUB_OUTPUT
+              fi
+            done
+          fi
+
+          if [ "${{ inputs.platform }}" = "ios" ] || [ "${{ inputs.platform }}" = "all" ]; then
+            for file in build-*.ipa; do
+              if [ -f "$file" ]; then
+                NEW_NAME="app-ios-${{ inputs.profile }}.ipa"
+                mv "$file" "build-output/$NEW_NAME"
+                echo "✓ Moved: $file → build-output/$NEW_NAME"
+                echo "ios=$NEW_NAME" >> $GITHUB_OUTPUT
+              fi
+            done
+          fi
+
+      - name: 📤 Upload Android artifact
+        if: (inputs.platform == 'android' || inputs.platform == 'all') && steps.set-artifacts.outputs.android != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ inputs.profile }}-${{ github.run_number }}
+          path: build-output/app-android-${{ inputs.profile }}.*
+          retention-days: 30
+
+      - name: 📤 Upload iOS artifact
+        if: (inputs.platform == 'ios' || inputs.platform == 'all') && steps.set-artifacts.outputs.ios != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ inputs.profile }}-${{ github.run_number }}
+          path: build-output/app-ios-${{ inputs.profile }}.ipa
+          retention-days: 30

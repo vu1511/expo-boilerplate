@@ -27,16 +27,19 @@ Each feature follows this standard structure:
 ## Rules
 
 ### 1. Encapsulation
+
 - Only export what other features need via `index.ts`
 - Keep internal implementation details private
 - Use the public API pattern
 
 ### 2. Self-Contained
+
 - Feature should work independently
 - Minimize dependencies on other features
 - If features are tightly coupled, consider merging them
 
 ### 3. Import from Public API
+
 ```typescript
 // ✅ Good
 import { useAuth, LoginForm } from '@/features/auth'
@@ -59,6 +62,7 @@ export type { User, AuthTokens } from './types'
 ```
 
 Usage in a route:
+
 ```typescript
 // app/(auth)/login.tsx
 import { LoginForm, useAuth } from '@/features/auth'
@@ -72,11 +76,13 @@ export default function LoginScreen() {
 ## Creating a New Feature
 
 1. **Create the folder structure:**
+
 ```bash
 mkdir -p src/features/my-feature/{components,hooks,store,types}
 ```
 
 2. **Create the public API file:**
+
 ```typescript
 // src/features/my-feature/index.ts
 export { useMyFeature } from './hooks/useMyFeature'
@@ -84,12 +90,14 @@ export type { MyFeatureType } from './types'
 ```
 
 3. **Add your implementation:**
+
 - Components in `components/`
 - Hooks in `hooks/`
 - State in `store/`
 - Types in `types/`
 
 4. **Use in your app:**
+
 ```typescript
 import { useMyFeature } from '@/features/my-feature'
 ```
@@ -109,6 +117,7 @@ export const useMyFeatureStore = create((set) => ({
 ```
 
 For persistent state, use the `persist` middleware:
+
 ```typescript
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
@@ -122,8 +131,8 @@ export const useMyFeatureStore = create(
     {
       name: 'my-feature-storage',
       storage: createJSONStorage(() => storage),
-    }
-  )
+    },
+  ),
 )
 ```
 
@@ -156,6 +165,7 @@ Use business/domain names, not technical names:
 ## Common Patterns
 
 ### Pattern 1: Cross-Feature Usage
+
 ```typescript
 // features/profile/hooks/useProfile.ts
 import { useAuth } from '@/features/auth'
@@ -167,11 +177,14 @@ export function useProfile() {
 ```
 
 ### Pattern 2: Shared Components
+
 If a component is used by multiple features:
+
 - Move it to `/components` if it's generic UI
 - Keep it in the feature if it contains business logic
 
 ### Pattern 3: API Services
+
 ```typescript
 // features/my-feature/api/myFeatureService.ts
 export const myFeatureService = {
@@ -215,4 +228,3 @@ If you're moving from a different structure:
 - **How to share code?** Via public API exports
 - **Where to put shared UI?** In `/components`
 - **Where to put global utils?** In `/utils`
-

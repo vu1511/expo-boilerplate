@@ -9,6 +9,7 @@
 ### Current State Analysis
 
 Your project has **6 different locations** where versions are stored:
+
 1. `package.json` - `"version": "1.0.0"`
 2. `keys.development.json` - `"APP_VERSION": "1.0.0"`
 3. `keys.staging.json` - `"APP_VERSION": "1.0.0"`
@@ -30,17 +31,17 @@ Your project has **6 different locations** where versions are stored:
 
 ### 1. Core Configuration Files
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `.versionrc.json` | standard-version configuration | ✅ Created |
-| `commitlint.config.js` | Commit message validation | ✅ Created |
-| `.czrc` | Commitizen configuration | ✅ Created |
-| `.github/pull_request_template.md` | PR template | ✅ Created |
+| File                               | Purpose                        | Status     |
+| ---------------------------------- | ------------------------------ | ---------- |
+| `.versionrc.json`                  | standard-version configuration | ✅ Created |
+| `commitlint.config.js`             | Commit message validation      | ✅ Created |
+| `.czrc`                            | Commitizen configuration       | ✅ Created |
+| `.github/pull_request_template.md` | PR template                    | ✅ Created |
 
 ### 2. Automation Scripts
 
-| Script | Purpose | Location |
-|--------|---------|----------|
+| Script                   | Purpose                  | Location                         |
+| ------------------------ | ------------------------ | -------------------------------- |
 | `release-interactive.js` | Interactive release menu | `scripts/release-interactive.js` |
 
 Script is **executable** and ready to use.
@@ -49,12 +50,13 @@ Script is **executable** and ready to use.
 
 ```json
 {
-  "release": "node scripts/release-interactive.js",  // Interactive release menu
-  "commit": "cz"                                     // Interactive commits
+  "release": "node scripts/release-interactive.js", // Interactive release menu
+  "commit": "cz" // Interactive commits
 }
 ```
 
 **Interactive Release Menu:**
+
 - Auto-detect (analyzes commits)
 - Patch (1.0.0 → 1.0.1)
 - Minor (1.0.0 → 1.1.0)
@@ -65,6 +67,7 @@ Script is **executable** and ready to use.
 ### 4. New Components
 
 **`AppVersion` Component** (`src/components/app-version.tsx`)
+
 - Displays app version, build number, environment
 - Tap to copy version info
 - Auto-detects iOS/Android
@@ -72,23 +75,25 @@ Script is **executable** and ready to use.
 
 ### 5. Documentation
 
-| Document | Description |
-|----------|-------------|
-| `docs/VERSION_MANAGEMENT.md` | Complete best practices guide (100+ pages) |
-| `IMPLEMENTATION_CHECKLIST.md` | Step-by-step implementation guide |
-| `VERSION_MANAGEMENT.md` | This file - quick overview |
+| Document                      | Description                                |
+| ----------------------------- | ------------------------------------------ |
+| `docs/VERSION_MANAGEMENT.md`  | Complete best practices guide (100+ pages) |
+| `IMPLEMENTATION_CHECKLIST.md` | Step-by-step implementation guide          |
+| `VERSION_MANAGEMENT.md`       | This file - quick overview                 |
 
 ## 🎯 Recommended Strategy
 
 ### Single Source of Truth: `package.json`
 
 **Why?**
+
 - ✅ Standard for Node.js projects
 - ✅ All tools expect it there
 - ✅ Easy to automate
 - ✅ Git-tracked by default
 
 **Flow:**
+
 ```
 package.json (version)
     ↓
@@ -101,11 +106,11 @@ Native builds (iOS/Android) - auto-generated
 
 Follow **MAJOR.MINOR.PATCH** format:
 
-| Version Type | When to Use | Example |
-|--------------|-------------|---------|
-| **PATCH** (x.x.X) | Bug fixes only | `1.0.0` → `1.0.1` |
+| Version Type      | When to Use               | Example           |
+| ----------------- | ------------------------- | ----------------- |
+| **PATCH** (x.x.X) | Bug fixes only            | `1.0.0` → `1.0.1` |
 | **MINOR** (x.X.0) | New features (compatible) | `1.0.0` → `1.1.0` |
-| **MAJOR** (X.0.0) | Breaking changes | `1.0.0` → `2.0.0` |
+| **MAJOR** (X.0.0) | Breaking changes          | `1.0.0` → `2.0.0` |
 
 ### Build Number Strategy
 
@@ -117,6 +122,7 @@ const buildNumber = Math.floor(Date.now() / 1000).toString()
 ```
 
 **Benefits:**
+
 - ✅ Always unique
 - ✅ Automatic increment
 - ✅ No manual management
@@ -139,6 +145,7 @@ chore(deps): upgrade expo to v54
 ```
 
 **Benefits:**
+
 - ✅ Auto-generate changelogs
 - ✅ Auto-detect version bumps
 - ✅ Clear project history
@@ -178,7 +185,7 @@ import packageJson from './package.json'
 export default ({ config }: ConfigContext): ExpoConfig => {
   const version = packageJson.version
   const buildNumber = Math.floor(Date.now() / 1000).toString()
-  
+
   return {
     ...config,
     version: version,
@@ -282,17 +289,20 @@ eas build --platform all --profile production
 ## 📋 Complete Release Checklist
 
 ### Pre-Release
+
 - [ ] All tests pass (`yarn test`)
 - [ ] Linting passes (`yarn lint`)
 - [ ] All commits use conventional format
 - [ ] No uncommitted changes
 
 ### Release
+
 - [ ] Run `yarn release` (interactive menu)
 - [ ] Review generated CHANGELOG
 - [ ] Push with `git push --follow-tags`
 
 ### Build
+
 - [ ] Run `yarn build:deploy` (includes prebuild automatically)
 - [ ] Or for CI/CD: `yarn prebuild:production`
 - [ ] Build iOS: `eas build --platform ios`
@@ -300,12 +310,14 @@ eas build --platform all --profile production
 - [ ] Test on real devices
 
 ### Submit
+
 - [ ] Upload to App Store Connect (iOS)
 - [ ] Upload to Google Play Console (Android)
 - [ ] Add release notes (from CHANGELOG)
 - [ ] Submit for review
 
 ### Post-Release
+
 - [ ] Monitor crash reports
 - [ ] Monitor app store reviews
 - [ ] Create GitHub release with notes
@@ -366,12 +378,15 @@ git push --follow-tags origin main
 ## 🔧 Troubleshooting
 
 ### "standard-version not found"
+
 ```bash
 yarn add -D standard-version
 ```
 
 ### "Commitlint fails on valid commit"
+
 Check format is exactly:
+
 ```bash
 type(scope): subject
 
@@ -385,13 +400,16 @@ feat/add login
 ```
 
 ### "Version not updating in app"
+
 1. Rebuild native: `yarn build` (includes prebuild automatically)
 2. Or for CI/CD: `yarn prebuild:production`
 3. Clear cache: `yarn start -c`
 4. Check `app.config.ts` reads from `package.json` (single source of truth)
 
 ### "Build number conflict on App Store"
+
 Ensure using timestamp strategy in `app.config.ts`:
+
 ```typescript
 const buildNumber = Math.floor(Date.now() / 1000).toString()
 ```
@@ -400,23 +418,23 @@ const buildNumber = Math.floor(Date.now() / 1000).toString()
 
 ### Before Implementation
 
-| Task | Method | Time | Error Risk |
-|------|--------|------|-----------|
-| Version bump | Manual edit in 6 places | 10 min | High |
-| Changelog | Manual write | 20 min | Medium |
-| Git tag | Remember to create | 2 min | Medium |
-| Build numbers | Manually increment | 5 min | High |
-| **Total** | **Manual, error-prone** | **37 min** | **High** |
+| Task          | Method                  | Time       | Error Risk |
+| ------------- | ----------------------- | ---------- | ---------- |
+| Version bump  | Manual edit in 6 places | 10 min     | High       |
+| Changelog     | Manual write            | 20 min     | Medium     |
+| Git tag       | Remember to create      | 2 min      | Medium     |
+| Build numbers | Manually increment      | 5 min      | High       |
+| **Total**     | **Manual, error-prone** | **37 min** | **High**   |
 
 ### After Implementation
 
-| Task | Method | Time | Error Risk |
-|------|--------|------|-----------|
-| Version bump | `yarn release` | 1 min | None |
-| Changelog | Auto-generated | 0 min | None |
-| Git tag | Auto-created | 0 min | None |
-| Build numbers | Auto-increment | 0 min | None |
-| **Total** | **Automated** | **1 min** | **None** |
+| Task          | Method         | Time      | Error Risk |
+| ------------- | -------------- | --------- | ---------- |
+| Version bump  | `yarn release` | 1 min     | None       |
+| Changelog     | Auto-generated | 0 min     | None       |
+| Git tag       | Auto-created   | 0 min     | None       |
+| Build numbers | Auto-increment | 0 min     | None       |
+| **Total**     | **Automated**  | **1 min** | **None**   |
 
 **Time saved per release:** ~35 minutes  
 **Errors eliminated:** ~90%
@@ -426,12 +444,14 @@ const buildNumber = Math.floor(Date.now() / 1000).toString()
 ### Immediate (Today)
 
 1. ✅ Install dependencies:
+
    ```bash
    yarn add -D standard-version @commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog
    yarn add expo-clipboard
    ```
 
 2. ✅ Setup commit validation:
+
    ```bash
    echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
    chmod +x .husky/commit-msg
@@ -488,14 +508,18 @@ const buildNumber = Math.floor(Date.now() / 1000).toString()
 ## 💡 Pro Tips
 
 ### 1. Use Dry Run First
+
 Always test releases before committing:
+
 ```bash
 yarn release
 # Select option 6 (Dry Run)
 ```
 
 ### 2. Commit Often
+
 Small, frequent commits are better than large ones:
+
 ```bash
 # Good
 git commit -m "feat(auth): add login UI"
@@ -506,15 +530,19 @@ git commit -m "feat(auth): complete authentication system"
 ```
 
 ### 3. Use Interactive Commit Helper
+
 For team members new to conventional commits:
+
 ```bash
 yarn commit
 ```
 
 ### 4. Review Changelog Before Pushing
+
 The release script shows the changelog—review it!
 
 ### 5. Keep Changelog Updated
+
 If you squash commits, update CHANGELOG manually after release.
 
 ## 🎉 Summary
@@ -526,7 +554,7 @@ You now have a **professional-grade version management system** that:
 ✅ **Eliminates** manual errors across 6 version locations  
 ✅ **Saves** ~35 minutes per release  
 ✅ **Provides** clear project history  
-✅ **Scales** with your team  
+✅ **Scales** with your team
 
 ### The New Release Process (1 minute)
 
@@ -550,6 +578,7 @@ eas build --platform all
 ---
 
 **Questions?**
+
 - Read `docs/VERSION_MANAGEMENT.md` for deep dive
 - Check `IMPLEMENTATION_CHECKLIST.md` for step-by-step
 - Review examples above for common scenarios
@@ -562,4 +591,3 @@ Start with the "Quick Start Guide" above! ⬆️
 **Document Version:** 1.0.0  
 **Last Updated:** November 8, 2025  
 **Author:** AI Research Assistant
-
