@@ -2,7 +2,7 @@ name: CI - Lint, Format & Test
 
 on:
   workflow_call:
-   secrets:
+    secrets:
       CODECOV_TOKEN:
         required: false
 

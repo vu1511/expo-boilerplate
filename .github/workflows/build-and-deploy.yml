@@ -86,15 +86,16 @@ jobs:
   # Deploy Android
   deploy-android:
     name: Deploy Android
-    needs: [pre-checks, build-android]
+    needs: [build-android]
     if: |
+      always() &&
       (inputs.workflow-type == 'build-deploy-android' || 
        inputs.workflow-type == 'build-deploy-both' || 
        inputs.workflow-type == 'deploy-android' || 
        inputs.workflow-type == 'deploy-both') &&
       (inputs.workflow-type == 'deploy-android' || 
        inputs.workflow-type == 'deploy-both' || 
-       (needs.pre-checks.result == 'success' && needs.build-android.result == 'success'))
+       needs.build-android.result == 'success')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'android'
@@ -109,15 +110,16 @@ jobs:
   # Deploy iOS
   deploy-ios:
     name: Deploy iOS
-    needs: [pre-checks, build-ios]
+    needs: [build-ios]
     if: |
+      always() &&
       (inputs.workflow-type == 'build-deploy-ios' || 
        inputs.workflow-type == 'build-deploy-both' || 
        inputs.workflow-type == 'deploy-ios' || 
        inputs.workflow-type == 'deploy-both') &&
       (inputs.workflow-type == 'deploy-ios' || 
        inputs.workflow-type == 'deploy-both' || 
-       (needs.pre-checks.result == 'success' && needs.build-ios.result == 'success'))
+       needs.build-ios.result == 'success')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'ios'
@@ -132,7 +134,7 @@ jobs:
   # Summary
   summary:
     name: Workflow Summary
-    needs: [pre-checks, build-android, build-ios, deploy-android, deploy-ios]
+    needs: [build-android, build-ios, deploy-android, deploy-ios]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -146,7 +148,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Job Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Pre-checks: ${{ needs.pre-checks.result }}" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ inputs.workflow-type }}" == *"android"* ]] || [[ "${{ inputs.workflow-type }}" == *"both"* ]]; then
             echo "- Build Android: ${{ needs.build-android.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
