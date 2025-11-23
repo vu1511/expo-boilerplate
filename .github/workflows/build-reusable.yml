@@ -77,17 +77,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 💾 Cache CocoaPods
-        id: pods-cache
-        if: (inputs.platform == 'ios' || inputs.platform == 'all') && runner.os == 'macOS'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/Library/Caches/CocoaPods
-            ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('package.json', 'yarn.lock', 'app.config.ts', 'eas.json') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - name: 💾 Cache CocoaPods
+      #   id: pods-cache
+      #   if: (inputs.platform == 'ios' || inputs.platform == 'all') && runner.os == 'macOS'
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/Library/Caches/CocoaPods
+      #       ios/Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('package.json', 'yarn.lock', 'app.config.ts', 'eas.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
 
       - name: 🍎 Setup Xcode (for iOS on local builds)
         if: (inputs.platform == 'ios' || inputs.platform == 'all') && runner.os == 'macOS'
@@ -127,18 +127,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-eas-build-local-
 
-      - name: 🏗️ Prebuild native code
-        env:
-          KEYSFILE: keys.${{ inputs.profile }}.json
-        run: |
-          if [ "${{ inputs.platform }}" = "all" ]; then
-            echo "Prebuilding Android..."
-            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform android --clean
-            echo "Prebuilding iOS..."
-            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ios --clean
-          else
-            CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ${{ inputs.platform }} --clean
-          fi
+      # - name: 🏗️ Prebuild native code
+      #   env:
+      #     KEYSFILE: keys.${{ inputs.profile }}.json
+      #   run: |
+      #     if [ "${{ inputs.platform }}" = "all" ]; then
+      #       echo "Prebuilding Android..."
+      #       CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform android --clean
+      #       echo "Prebuilding iOS..."
+      #       CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ios --clean
+      #     else
+      #       CI=1 KEYSFILE=keys.${{ inputs.profile }}.json npx expo prebuild --platform ${{ inputs.platform }} --clean
+      #     fi
 
       - name: 🚀 Build locally with EAS
         env:
