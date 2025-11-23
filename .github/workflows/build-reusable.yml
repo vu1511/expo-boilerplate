@@ -85,7 +85,7 @@ jobs:
           path: |
             ~/Library/Caches/CocoaPods
             ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('package.json', 'yarn.lock', 'app.config.ts', 'eas.json') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 

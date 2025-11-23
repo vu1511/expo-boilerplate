@@ -95,8 +95,7 @@ jobs:
       always() && 
       (inputs.workflow-type == 'deploy-android' || 
        inputs.workflow-type == 'deploy-both' || 
-       needs.build-android.result == 'success' ||
-       needs.build-android.result == 'skipped')
+       needs.build-android.result == 'success')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'android'
@@ -116,8 +115,7 @@ jobs:
       always() && 
       (inputs.workflow-type == 'deploy-ios' || 
        inputs.workflow-type == 'deploy-both' || 
-       needs.build-ios.result == 'success' ||
-       needs.build-ios.result == 'skipped')
+       needs.build-ios.result == 'success')
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       platform: 'ios'
